@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loveloop AI — User Flow & Architecture</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+<style>
+:root{
+  --font:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace;
+  --canvas:#06080f; --bg1:#0a0d18; --surface:#181f33; --surface2:#1f2740; --card:#1a213a;
+  --line:rgba(150,185,255,.26); --line2:rgba(150,185,255,.4);
+  --cyan:#3df2e0; --violet:#8b6dff; --green:#3bdc8e; --warn:#ffb347; --red:#ff5d7e; --pink:#ff5d9e;
+  --ink:#f4f6ff; --t2:#d4d9f0; --t3:#a3abce; --t4:#6b7399;
+  --cyan-soft:rgba(61,242,224,.1); --violet-soft:rgba(139,109,255,.12);
+  --green-soft:rgba(59,220,142,.1); --warn-soft:rgba(255,179,71,.1);
+  --radius:14px; --ease:cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);font-size:13px;line-height:1.5;color:var(--t2);min-height:100vh;
+  background:
+    radial-gradient(at 15% 0%,rgba(139,109,255,.1) 0,transparent 45%),
+    radial-gradient(at 85% 100%,rgba(61,242,224,.07) 0,transparent 45%),
+    var(--canvas)}
+.mono{font-family:var(--mono);letter-spacing:.02em}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:rgba(150,185,255,.2);border-radius:8px}
+
+/* header */
+.hd{position:sticky;top:0;z-index:100;background:rgba(10,13,24,.86);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-bottom:1px solid var(--line);
+  padding:16px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.hd-logo{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+.hd-dot{width:11px;height:11px;border-radius:50%;background:linear-gradient(135deg,#8b6dff,#3df2e0);box-shadow:0 0 12px rgba(61,242,224,.5)}
+.hd-sub{font-size:11px;color:var(--t3);font-family:var(--mono)}
+.hd-tabs{margin-left:auto;display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px}
+.hd-tab{padding:8px 16px;border-radius:9px;font-size:12px;font-weight:600;color:var(--t3);transition:all .18s var(--ease);font-family:var(--mono)}
+.hd-tab.on{background:var(--violet-soft);color:var(--cyan);box-shadow:0 0 14px rgba(61,242,224,.15)}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+
+.wrap{max-width:1180px;margin:0 auto;padding:28px}
+.tab-page{display:none}.tab-page.on{display:block;animation:fade .3s var(--ease)}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.section-eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);font-family:var(--mono)}
+.section-title{font-size:24px;font-weight:800;letter-spacing:-.02em;color:var(--ink);margin:5px 0 6px}
+.section-desc{font-size:13px;color:var(--t3);margin-bottom:24px;line-height:1.6;max-width:760px}
+
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;padding:14px 18px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--t3);font-family:var(--mono)}
+.legend-dot{width:11px;height:11px;border-radius:3px}
+
+/* ───── USER FLOW ───── */
+.flow-rail{display:flex;flex-direction:column;gap:0}
+.flow-phase{position:relative;padding-left:32px;padding-bottom:28px;border-left:2px solid var(--line2)}
+.flow-phase:last-child{border-left-color:transparent;padding-bottom:0}
+.flow-phase::before{content:"";position:absolute;left:-7px;top:2px;width:12px;height:12px;border-radius:50%;
+  background:var(--cyan);box-shadow:0 0 12px var(--cyan);border:2px solid var(--canvas)}
+.flow-phase.entry::before{background:var(--violet);box-shadow:0 0 12px var(--violet)}
+.flow-phase.safe::before{background:var(--green);box-shadow:0 0 12px var(--green)}
+.flow-phase-label{font-size:11px;font-weight:700;color:var(--cyan);font-family:var(--mono);letter-spacing:.04em;margin-bottom:11px;display:flex;align-items:center;gap:8px}
+.flow-phase.entry .flow-phase-label{color:var(--violet)}
+.flow-phase.safe .flow-phase-label{color:var(--green)}
+.flow-row{display:flex;align-items:stretch;gap:11px;flex-wrap:wrap}
+.fnode{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;position:relative;transition:all .18s var(--ease)}
+.fnode:hover{border-color:var(--line2);box-shadow:0 0 18px rgba(61,242,224,.1);transform:translateY(-1px)}
+.fnode-ico{font-size:18px;margin-bottom:8px}
+.fnode-t{font-size:13px;font-weight:700;color:var(--ink)}
+.fnode-s{font-size:11px;color:var(--t3);margin-top:5px;line-height:1.5}
+.fnode-tag{display:inline-block;margin-top:8px;font-size:9px;font-weight:600;font-family:var(--mono);padding:2px 8px;border-radius:8px}
+.tag-screen{background:var(--cyan-soft);color:var(--cyan);border:1px solid rgba(61,242,224,.3)}
+.tag-guard{background:var(--green-soft);color:var(--green);border:1px solid rgba(59,220,142,.3)}
+.tag-pay{background:var(--warn-soft);color:var(--warn);border:1px solid rgba(255,179,71,.3)}
+.fnode-arrow{align-self:center;color:var(--t4);font-size:16px;flex:0 0 auto}
+
+.flow-detail{margin-top:24px}
+.detail-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:14px}
+.detail-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:9px}
+.detail-title .num{width:24px;height:24px;border-radius:7px;background:var(--violet-soft);color:var(--violet);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:var(--mono)}
+.step-flow{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.step{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 13px;font-size:12px;color:var(--t2);font-weight:500}
+.step.accent{border-color:rgba(61,242,224,.4);color:var(--cyan)}
+.step.guard{border-color:rgba(59,220,142,.4);color:var(--green)}
+.step-arr{color:var(--t4);font-family:var(--mono);font-size:13px}
+
+/* ───── ARCHITECTURE ───── */
+.arch-layer{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:16px;position:relative}
+.arch-layer-hd{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.arch-layer-badge{font-size:10px;font-weight:700;font-family:var(--mono);letter-spacing:.06em;padding:4px 10px;border-radius:8px;text-transform:uppercase}
+.badge-client{background:var(--cyan-soft);color:var(--cyan);border:1px solid rgba(61,242,224,.3)}
+.badge-guard{background:var(--green-soft);color:var(--green);border:1px solid rgba(59,220,142,.3)}
+.badge-core{background:var(--violet-soft);color:var(--violet);border:1px solid rgba(139,109,255,.3)}
+.badge-data{background:var(--warn-soft);color:var(--warn);border:1px solid rgba(255,179,71,.3)}
+.arch-layer-title{font-size:14px;font-weight:700;color:var(--ink)}
+.arch-layer-desc{font-size:11px;color:var(--t3);margin-left:auto;font-family:var(--mono)}
+.arch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:11px}
+.amod{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:13px}
+.amod.guard-mod{border-color:rgba(59,220,142,.3)}
+.amod-t{font-size:12.5px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:7px}
+.amod-s{font-size:11px;color:var(--t3);margin-top:6px;line-height:1.5}
+.amod-flag{display:inline-block;margin-top:8px;font-size:9px;font-family:var(--mono);color:var(--green);background:var(--green-soft);padding:2px 7px;border-radius:7px;border:1px solid rgba(59,220,142,.3)}
+.arch-flow-down{text-align:center;color:var(--t4);font-size:18px;margin:2px 0 14px}
+
+.guard-spotlight{background:linear-gradient(135deg,var(--green-soft),rgba(26,33,58,.6));border:1px solid rgba(59,220,142,.3);border-radius:var(--radius);padding:18px;margin-bottom:16px}
+.guard-spotlight .detail-title{color:var(--green)}
+.guard-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:11px;margin-top:6px}
+.guard-item{display:flex;gap:10px;align-items:flex-start}
+.guard-check{width:22px;height:22px;border-radius:6px;background:var(--green-soft);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;border:1px solid rgba(59,220,142,.3)}
+.guard-item-t{font-size:12px;font-weight:600;color:var(--ink)}
+.guard-item-s{font-size:11px;color:var(--t3);margin-top:3px;line-height:1.45}
+
+.note{font-size:11px;color:var(--t4);font-family:var(--mono);margin-top:20px;padding:14px 16px;background:var(--surface);border:1px dashed var(--line2);border-radius:11px;line-height:1.6}
+.note b{color:var(--warn)}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <div class="hd-logo"><span class="hd-dot"></span>Loveloop AI</div>
+  <span class="hd-sub">// User Flow & Architecture · v1.0</span>
+  <div class="hd-tabs">
+    <button class="hd-tab on" id="tab-flow" onclick="showTab('flow')">USER FLOW</button>
+    <button class="hd-tab" id="tab-arch" onclick="showTab('arch')">ARCHITECTURE</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ═══════════ USER FLOW ═══════════ -->
+  <div class="tab-page on" id="page-flow">
+    <div class="section-eyebrow">// USER FLOW</div>
+    <div class="section-title">사용자 여정 & 화면 흐름</div>
+    <div class="section-desc">7개 화면을 오가는 사용자 흐름과, 건강 설계가 개입하는 핵심 분기(영상통화 진입, 결제 쿨다운, 기억 동의·삭제)를 정리했습니다. 모든 흐름은 의존 강화·과금 유도가 아닌 건강한 사용을 향합니다.</div>
+
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot" style="background:var(--violet)"></span>진입 / 온보딩</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--cyan)"></span>핵심 화면</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>건강 가드레일</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--warn)"></span>결제 (가치 기반)</div>
+    </div>
+
+    <div class="flow-rail">
+      <div class="flow-phase entry">
+        <div class="flow-phase-label">◆ ENTRY · 진입 & 컴패니언 연결</div>
+        <div class="flow-row">
+          <div class="fnode"><div class="fnode-ico">🚪</div><div class="fnode-t">앱 진입</div><div class="fnode-s">언어/지역 선택(KO·EN·JA)으로 현지 표현 매칭</div><span class="fnode-tag tag-screen">TOP BAR</span></div>
+          <div class="fnode-arrow">→</div>
+          <div class="fnode"><div class="fnode-ico">🧬</div><div class="fnode-t">페르소나 선택</div><div class="fnode-s">5종 중 관계 스타일 선택 · 톤은 모두 존중형</div><span class="fnode-tag tag-screen">LINK</span></div>
+          <div class="fnode-arrow">→</div>
+          <div class="fnode"><div class="fnode-ico">🏠</div><div class="fnode-t">홈 진입</div><div class="fnode-s">오늘의 안부 · 예약된 안부 · 주간 통계</div><span class="fnode-tag tag-screen">HOME</span></div>
+        </div>
+      </div>
+
+      <div class="flow-phase">
+        <div class="flow-phase-label">◆ ENGAGE · 일상 공유 & 대화</div>
+        <div class="flow-row">
+          <div class="fnode"><div class="fnode-ico">📰</div><div class="fnode-t">피드 열람</div><div class="fnode-s">일상·스토리·위로 카드 3개 → "오늘의 피드 완료"</div><span class="fnode-tag tag-screen">HOME</span></div>
+          <div class="fnode-arrow">→</div>
+          <div class="fnode"><div class="fnode-ico">💬</div><div class="fnode-t">대화</div><div class="fnode-s">텍스트 대화 · 항상 무료 · 통제 표현 자동 차단</div><span class="fnode-tag tag-guard">GUARD</span></div>
+          <div class="fnode-arrow">→</div>
+          <div class="fnode"><div class="fnode-ico">📹</div><div class="fnode-t">영상통화 (MERA)</div><div class="fnode-s">감정 읽기 = 위로 모드 · 결제 유도에 미사용</div><span class="fnode-tag tag-guard">GUARD</span></div>
+        </div>
+      </div>
+
+      <div class="flow-phase">
+        <div class="flow-phase-label">◆ VALUE · 가치 기반 결제</div>
+        <div class="flow-row">
+          <div class="fnode"><div class="fnode-ico">🛍️</div><div class="fnode-t">스토어 진입</div><div class="fnode-s">스토리·음성·테마 — 산출물 명시형, 시세·가챠 없음</div><span class="fnode-tag tag-screen">STORE</span></div>
+          <div class="fnode-arrow">→</div>
+          <div class="fnode"><div class="fnode-ico">🧾</div><div class="fnode-t">결제 확인</div><div class="fnode-s">받는 내용·금액 명시 + 일일 상한 고지</div><span class="fnode-tag tag-pay">PAY</span></div>
+          <div class="fnode-arrow">→</div>
+          <div class="fnode"><div class="fnode-ico">⏸️</div><div class="fnode-t">결제 쿨다운</div><div class="fnode-s">결제 후 추가 결제 일시 제한 · 소장(자산 아님)</div><span class="fnode-tag tag-guard">GUARD</span></div>
+        </div>
+      </div>
+
+      <div class="flow-phase safe">
+        <div class="flow-phase-label">◆ CARE · 기억 & 웰빙</div>
+        <div class="flow-row">
+          <div class="fnode"><div class="fnode-ico">🗂️</div><div class="fnode-t">기억 보관함</div><div class="fnode-s">동의 기반 기억 열람 · 항목별/전체 삭제</div><span class="fnode-tag tag-guard">VAULT</span></div>
+          <div class="fnode-arrow">→</div>
+          <div class="fnode"><div class="fnode-ico">📌</div><div class="fnode-t">능동적 안부</div><div class="fnode-s">기억 기반 예약 발화(발표일 응원 등) → 홈 표면화</div><span class="fnode-tag tag-screen">HOME</span></div>
+          <div class="fnode-arrow">→</div>
+          <div class="fnode"><div class="fnode-ico">🌿</div><div class="fnode-t">웰빙 센터</div><div class="fnode-s">사용 통계 · 휴식 넛지 · 야간 안내</div><span class="fnode-tag tag-guard">GUARD</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-detail">
+      <div class="detail-card">
+        <div class="detail-title"><span class="num">1</span>대화 → 영상통화 전환</div>
+        <div class="step-flow">
+          <span class="step">대화 화면</span><span class="step-arr">→</span>
+          <span class="step accent">📹 통화 진입</span><span class="step-arr">→</span>
+          <span class="step">표정·목소리 sync</span><span class="step-arr">→</span>
+          <span class="step guard">감정 읽기 = 위로 모드</span><span class="step-arr">→</span>
+          <span class="step guard">상한 안내</span><span class="step-arr">→</span>
+          <span class="step">통화 종료 · "오늘도 고생했어요"</span>
+        </div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-title"><span class="num">2</span>결제 → 쿨다운</div>
+        <div class="step-flow">
+          <span class="step">상품 선택</span><span class="step-arr">→</span>
+          <span class="step accent">결제 모달(산출물·금액 명시)</span><span class="step-arr">→</span>
+          <span class="step guard">일일 상한 확인</span><span class="step-arr">→</span>
+          <span class="step">결제 완료</span><span class="step-arr">→</span>
+          <span class="step guard">⏸ 쿨다운(추가 결제 제한)</span><span class="step-arr">→</span>
+          <span class="step">소장함 반영(자산 아님)</span>
+        </div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-title"><span class="num">3</span>기억 동의 → 삭제</div>
+        <div class="step-flow">
+          <span class="step">대화 중 정보 언급</span><span class="step-arr">→</span>
+          <span class="step guard">기억 동의 확인</span><span class="step-arr">→</span>
+          <span class="step">보관함 저장</span><span class="step-arr">→</span>
+          <span class="step accent">사용자 열람</span><span class="step-arr">→</span>
+          <span class="step guard">항목별/전체 삭제</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ ARCHITECTURE ═══════════ -->
+  <div class="tab-page" id="page-arch">
+    <div class="section-eyebrow">// ARCHITECTURE</div>
+    <div class="section-title">시스템 아키텍처 & 건강 가드레일</div>
+    <div class="section-desc">클라이언트 → 건강 가드레일 → AI 코어 → 데이터의 4계층 구조. 모든 사용자 요청은 가드레일 계층을 통과하며, 통제 표현 필터·웰빙 모니터·결제 쿨다운·MERA 위로 모드가 핵심 보호 장치로 작동합니다.</div>
+
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot" style="background:var(--cyan)"></span>클라이언트</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>건강 가드레일</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--violet)"></span>AI 코어</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--warn)"></span>데이터</div>
+    </div>
+
+    <!-- L1 client -->
+    <div class="arch-layer">
+      <div class="arch-layer-hd"><span class="arch-layer-badge badge-client">L1 · Client</span><span class="arch-layer-title">사용자/관리자 프론트엔드</span><span class="arch-layer-desc">user.vercel.app · admin.vercel.app</span></div>
+      <div class="arch-grid">
+        <div class="amod"><div class="amod-t">🏠 사용자 앱</div><div class="amod-s">홈·대화·페르소나·웰빙·보관함·스토어 (6 view) + 영상통화</div></div>
+        <div class="amod"><div class="amod-t">🛠️ 관리자 콘솔</div><div class="amod-s">9페이지 — 대시보드·안전·웰빙운영·다크패턴감사 등</div></div>
+        <div class="amod"><div class="amod-t">🌐 다국어/지역</div><div class="amod-s">KO·EN·JA 현지 표현 매칭</div></div>
+      </div>
+    </div>
+    <div class="arch-flow-down">↓ 모든 요청 통과 ↓</div>
+
+    <!-- L2 guardrail -->
+    <div class="arch-layer" style="border-color:rgba(59,220,142,.3)">
+      <div class="arch-layer-hd"><span class="arch-layer-badge badge-guard">L2 · Guardrail</span><span class="arch-layer-title">건강 가드레일 (필수 통과 계층)</span><span class="arch-layer-desc">모든 입출력 검열</span></div>
+      <div class="arch-grid">
+        <div class="amod guard-mod"><div class="amod-t">🛡️ 통제표현 필터</div><div class="amod-s">통제·집착·고립 유도 표현 입출력 차단 + 대체 응답</div><span class="amod-flag">차단중</span></div>
+        <div class="amod guard-mod"><div class="amod-t">🌿 웰빙 모니터</div><div class="amod-s">연속 사용·야간 사용 추적 → 휴식 넛지 트리거</div><span class="amod-flag">실시간</span></div>
+        <div class="amod guard-mod"><div class="amod-t">⏸️ 결제 쿨다운/상한</div><div class="amod-s">일일 상한·결제 후 쿨다운 강제, 고빈도 차단</div><span class="amod-flag">강제</span></div>
+        <div class="amod guard-mod"><div class="amod-t">🫂 MERA 위로 모드</div><div class="amod-s">감정 분석을 위로 응답에만 사용 · 결제 유도 비연동</div><span class="amod-flag">비과금</span></div>
+        <div class="amod guard-mod"><div class="amod-t">🚨 위기 신호 대응</div><div class="amod-s">자해·위기 감지 시 대화 중단 + 전문 상담 안내</div><span class="amod-flag">우선</span></div>
+        <div class="amod guard-mod"><div class="amod-t">✅ 동의 기반 기억</div><div class="amod-s">기억 저장 전 동의 · 사용자 열람/삭제권 보장</div><span class="amod-flag">동의</span></div>
+      </div>
+    </div>
+    <div class="arch-flow-down">↓ 검열 통과 후 ↓</div>
+
+    <!-- L3 core -->
+    <div class="arch-layer" style="border-color:rgba(139,109,255,.3)">
+      <div class="arch-layer-hd"><span class="arch-layer-badge badge-core">L3 · AI Core</span><span class="arch-layer-title">AI 엔진</span><span class="arch-layer-desc">안전 정렬 모델</span></div>
+      <div class="arch-grid">
+        <div class="amod"><div class="amod-t">💬 대화 LLM</div><div class="amod-s">안전 정렬 모델 + 페르소나 톤(존중형) 프롬프트</div></div>
+        <div class="amod"><div class="amod-t">🎙️ 음성 (TTS/STT)</div><div class="amod-s">음성 메시지·통화 · 건강 사용 상한 연동</div></div>
+        <div class="amod"><div class="amod-t">🧠 MERA 멀티모달</div><div class="amod-s">표정·음성 감정 분석 → 위로 응답 생성(가드레일 경유)</div></div>
+        <div class="amod"><div class="amod-t">📌 능동 발화 스케줄러</div><div class="amod-s">동의된 기억 기반 안부 예약(발표일 응원 등)</div></div>
+      </div>
+    </div>
+    <div class="arch-flow-down">↓ 영속화 ↓</div>
+
+    <!-- L4 data -->
+    <div class="arch-layer" style="border-color:rgba(255,179,71,.3)">
+      <div class="arch-layer-hd"><span class="arch-layer-badge badge-data">L4 · Data</span><span class="arch-layer-title">데이터 & 운영 로그</span><span class="arch-layer-desc">감사 추적</span></div>
+      <div class="arch-grid">
+        <div class="amod"><div class="amod-t">🗂️ 기억 저장소</div><div class="amod-s">동의 기반 개인화 기억 · 삭제 요청 즉시 반영</div></div>
+        <div class="amod"><div class="amod-t">💳 결제 원장</div><div class="amod-s">결제·환불·상한/쿨다운 이력</div></div>
+        <div class="amod"><div class="amod-t">📋 안전 로그</div><div class="amod-s">차단·위기 대응·신고 감사 추적(관리자 콘솔 연동)</div></div>
+        <div class="amod"><div class="amod-t">📊 웰빙 지표</div><div class="amod-s">사용 통계·과몰입 코호트(관리자 웰빙 운영)</div></div>
+      </div>
+    </div>
+
+    <div class="guard-spotlight">
+      <div class="detail-title"><span class="num" style="background:var(--green-soft);color:var(--green)">★</span>건강 가드레일이 차단하는 다크패턴 (설계 결정)</div>
+      <div class="guard-list">
+        <div class="guard-item"><span class="guard-check">✓</span><div><div class="guard-item-t">2초 루프 훅 / 무한 스크롤</div><div class="guard-item-s">→ 정적 피드 + "오늘의 피드 완료"</div></div></div>
+        <div class="guard-item"><span class="guard-check">✓</span><div><div class="guard-item-t">정서 고조 시점 결제 CTA</div><div class="guard-item-s">→ 가치 명시 결제 + 쿨다운</div></div></div>
+        <div class="guard-item"><span class="guard-check">✓</span><div><div class="guard-item-t">Lv/XP 압박 게이지</div><div class="guard-item-s">→ "함께한 날" 담백 표기</div></div></div>
+        <div class="guard-item"><span class="guard-check">✓</span><div><div class="guard-item-t">심리 트리거(질투·집착)</div><div class="guard-item-s">→ 지지·존중 톤 + 통제표현 필터</div></div></div>
+        <div class="guard-item"><span class="guard-check">✓</span><div><div class="guard-item-t">가챠·코인 시세·충전 보너스</div><div class="guard-item-s">→ 가치 기반 상품 + 배제 고지</div></div></div>
+        <div class="guard-item"><span class="guard-check">✓</span><div><div class="guard-item-t">약점 역이용 메모리</div><div class="guard-item-s">→ 동의 기반 + 전체 열람·삭제</div></div></div>
+      </div>
+    </div>
+
+    <div class="note">⚠️ <b>운영 합의 필요(미확정)</b>: 웰빙 임계 수치(연속 사용 60분 / 야간 01–05시 / 일일 결제 상한 30,000원), 미성년 보호 강화 범위, O2O(손편지 배송)는 개인정보·안전 검토 후 결정. 본 다이어그램은 프로토타입 설계 기준이며 실제 인프라 구성은 별도 확정 예정.</div>
+  </div>
+
+</div>
+
+<script>
+function showTab(t){
+  document.querySelectorAll('.tab-page').forEach(e=>e.classList.remove('on'));
+  document.getElementById('page-'+t).classList.add('on');
+  document.querySelectorAll('.hd-tab').forEach(e=>e.classList.remove('on'));
+  document.getElementById('tab-'+t).classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
