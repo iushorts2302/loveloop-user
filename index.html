@@ -278,6 +278,51 @@ input{font-family:inherit}
 .tab .ti{font-size:19px;line-height:1}
 .tab.on{color:var(--color-primary)}
 
+/* lang chip + alert badge */
+.lang-chip{height:30px;padding:0 11px;border-radius:16px;font-size:11px;font-weight:600;flex-shrink:0;
+  background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.65);color:var(--color-muted-80);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:flex;align-items:center;gap:4px}
+.top-badge{position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--color-rising);border:1.5px solid #fff}
+
+/* upcoming (예약된 안부 — 능동적 기억) */
+.upcoming{display:flex;align-items:flex-start;gap:12px;
+  background:linear-gradient(135deg,rgba(0,102,204,.07),rgba(77,163,255,.04));
+  border:1px solid rgba(0,102,204,.16)}
+.upcoming-ico{width:36px;height:36px;border-radius:11px;background:rgba(0,102,204,.1);display:flex;
+  align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.upcoming-body{flex:1;min-width:0}
+.upcoming-label{font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--color-primary)}
+.upcoming-text{font-size:13px;line-height:1.55;color:var(--color-muted-80);margin-top:5px}
+
+/* call overlay (건강 MERA) */
+.call-overlay{position:absolute;inset:0;z-index:650;display:none;flex-direction:column;
+  align-items:center;justify-content:space-between;padding:46px 22px 30px;
+  background:linear-gradient(160deg,#0a3a6e,#0066CC 55%,#4DA3FF);color:#fff}
+.call-overlay.on{display:flex}
+.call-top{width:100%;display:flex;justify-content:center}
+.call-mera{font-size:11px;font-weight:600;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);
+  padding:6px 13px;border-radius:20px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.call-avi-wrap{text-align:center}
+.call-avi{width:104px;height:104px;border-radius:32px;margin:0 auto;display:flex;align-items:center;
+  justify-content:center;font-size:42px;font-weight:700;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.4);box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.call-name{font-size:24px;font-weight:800;letter-spacing:-.02em;margin-top:18px}
+.call-status{font-size:13px;color:rgba(255,255,255,.82);margin-top:8px}
+.call-emotion{width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  border-radius:18px;padding:16px;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.call-emotion-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:.03em}
+.call-emotion-tags{display:flex;gap:8px;margin-top:11px}
+.emo-tag{flex:1;font-size:12px;font-weight:600;text-align:center;padding:9px 4px;border-radius:12px;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);transition:all .2s}
+.emo-tag.on{background:#fff;color:#0066CC;border-color:#fff}
+.call-emotion-note{font-size:11px;color:rgba(255,255,255,.75);margin-top:11px;line-height:1.5}
+.call-actions{display:flex;gap:20px;align-items:center}
+.call-btn{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:22px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);color:#fff;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:transform .15s}
+.call-btn:active{transform:scale(.9)}
+.call-btn.end{background:#FF3B30;border-color:#FF3B30;width:64px;height:64px;font-size:24px}
+
 /* ═══════════ MODAL ═══════════ */
 .modal-bg{position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:700;display:none;
   align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
@@ -312,8 +357,11 @@ input{font-family:inherit}
       <div class="top-name"><span class="top-on"></span><span id="top-name">서도진</span></div>
       <div class="top-sub" id="top-sub">든든한 조력형 · 함께한 지 27일</div>
     </div>
+    <button class="lang-chip" id="lang-chip" onclick="cycleLang()" title="언어/지역">🌐 <span id="lang-label">KO</span></button>
+    <button class="top-ico" onclick="toast('새 안부 1건 · 홈에서 확인하세요')" title="알림">🔔<span class="top-badge"></span></button>
     <button class="top-ico" onclick="go('wellbeing')" title="웰빙 센터">🌿</button>
   </div>
+
 
   <div class="screen">
 
@@ -325,6 +373,14 @@ input{font-family:inherit}
           <div class="hero-title" id="hero-name">서도진</div>
           <div class="hero-days">함께한 지 27일</div>
           <div class="hero-msg" id="hero-msg">"오늘 하루 어땠어? 무리한 건 없었고. 네 페이스대로 가도 괜찮아."</div>
+        </div>
+
+        <div class="cell cell--full upcoming tappable" onclick="go('memory')">
+          <div class="upcoming-ico">📌</div>
+          <div class="upcoming-body">
+            <div class="upcoming-label">예약된 안부 · 기억에서</div>
+            <div class="upcoming-text" id="upcoming-text">"다음 주 발표 있다고 했지? 그날 아침에 응원 메시지 보낼게. 너무 부담 갖지 마."</div>
+          </div>
         </div>
 
         <div class="cell cell--stat tappable" onclick="go('wellbeing')">
@@ -408,7 +464,8 @@ input{font-family:inherit}
           <div class="msg ai"><div class="msg-avi">서</div><div class="bubble">고생했어. 무리해서 더 끌고 가지 말고, 오늘은 일찍 쉬는 것도 좋아. 네가 편한 쪽으로 해.</div></div>
         </div>
         <div class="chat-ft">
-          <button class="icon-circle voice" onclick="toast('음성 통화는 건강 사용 상한이 적용됩니다 (프로토타입)')">🎙️</button>
+          <button class="icon-circle voice" onclick="toast('음성 메시지는 건강 사용 상한이 적용됩니다')">🎙️</button>
+          <button class="icon-circle voice" onclick="openCall()" title="영상통화">📹</button>
           <input class="chat-input" id="chat-input" placeholder="메시지 입력…" onkeydown="if(event.key==='Enter')sendMsg()">
           <button class="icon-circle send" onclick="sendMsg()">↑</button>
         </div>
@@ -521,6 +578,32 @@ input{font-family:inherit}
     <button class="tab" id="t-store" onclick="go('store')"><span class="ti">🛍️</span>스토어</button>
   </div>
 
+  <!-- CALL OVERLAY (건강 MERA — 위로 중심) -->
+  <div class="call-overlay" id="call-overlay">
+    <div class="call-top">
+      <div class="call-mera">🟢 함께 있는 중 · 안전 대화</div>
+    </div>
+    <div class="call-avi-wrap">
+      <div class="call-avi" id="call-avi">서</div>
+      <div class="call-name" id="call-name">서도진</div>
+      <div class="call-status" id="call-status">표정과 목소리를 부드럽게 맞추고 있어요</div>
+    </div>
+    <div class="call-emotion" id="call-emotion">
+      <div class="call-emotion-label">지금 함께 읽은 감정 · 위로 모드</div>
+      <div class="call-emotion-tags">
+        <span class="emo-tag on" id="emo-calm">🌿 편안함</span>
+        <span class="emo-tag" id="emo-tired">😮‍💨 피곤함</span>
+        <span class="emo-tag" id="emo-down">🫂 위로 필요</span>
+      </div>
+      <div class="call-emotion-note">감정 분석은 더 따뜻하게 응답하기 위한 용도예요. 결제 유도에 쓰이지 않아요.</div>
+    </div>
+    <div class="call-actions">
+      <button class="call-btn mute" onclick="toast('마이크를 잠시 껐어요')">🎙️</button>
+      <button class="call-btn end" onclick="closeCall()">📵</button>
+      <button class="call-btn" onclick="toast('통화도 건강 사용 상한이 적용돼요')">🌿</button>
+    </div>
+  </div>
+
   <!-- BUY MODAL -->
   <div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeBuy()">
     <div class="modal">
@@ -588,8 +671,24 @@ function pickP(k){
   document.getElementById('hero-name').innerText=p.name;
   document.getElementById('hero-msg').innerText=p.line;
   const ca=document.getElementById('chat-avi');ca.innerText=p.initial;ca.style.background=p.grad;
+  document.getElementById('call-avi').innerText=p.initial;
+  document.getElementById('call-name').innerText=p.name;
   renderPersonas();toast(p.name+"와(과) 함께하기 시작했어요");
 }
+
+/* 언어/지역 (글로벌 락인 — 표면화) */
+const langs=[{c:"KO",n:"한국어"},{c:"EN",n:"English"},{c:"JA",n:"日本語"}];
+let langIdx=0;
+function cycleLang(){langIdx=(langIdx+1)%langs.length;
+  document.getElementById('lang-label').innerText=langs[langIdx].c;
+  toast("언어 · 지역: "+langs[langIdx].n+"\n(현지 표현·호칭으로 자연스럽게 맞춰져요)");}
+
+/* 영상통화 (건강 MERA — 위로 중심) */
+function openCall(){document.getElementById('call-overlay').classList.add('on');
+  setTimeout(()=>{document.getElementById('call-status').innerText="네 목소리에 맞춰 천천히 이야기할게";},1200);}
+function closeCall(){document.getElementById('call-overlay').classList.remove('on');
+  document.getElementById('call-status').innerText="표정과 목소리를 부드럽게 맞추고 있어요";
+  toast("통화를 마쳤어요 · 오늘도 고생했어요 🌿");}
 
 function renderMem(){
   document.getElementById('mem-list').innerHTML=memData.map((m,i)=>
