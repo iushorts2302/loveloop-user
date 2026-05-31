@@ -3,347 +3,321 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Loveloop AI — 사용자웹 v3 (Pretendard / compact)</title>
+<title>Loveloop AI — 사용자웹 v4 (Cyber)</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
 <style>
-/* ═══════════ COLOR TOKENS (Al-Aseo STYLE.md §2.1) ═══════════ */
 :root{
-  --color-primary:#0066CC; --color-primary-hover:#0077ED; --color-primary-focus:#0071E3;
-  --color-primary-dark:#4DA3FF;
-  --color-canvas:#FFFFFF; --color-parchment:#F5F5F7; --color-pearl:#FAFAFC; --color-surface2:#ECEDEF;
-  --color-ink:#1D1D1F; --color-muted-48:#7A7A7A; --color-muted-80:#333333; --color-placeholder:#7A7A7A;
-  --color-divider:#F0F0F0; --color-hairline:#E0E0E0; --color-hairline-rgb:rgba(0,0,0,0.08);
-  --color-danger:#D70015; --color-hot:#FF4500; --color-rising:#FF6B35;
+  --font:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace;
+  /* cyber dark base */
+  --bg0:#05060c;          /* 무대 최하단 */
+  --bg1:#0a0d18;          /* 디바이스 베이스 */
+  --bg2:#0e1322;          /* 패널 */
+  --bg3:#141a2e;          /* 카드 */
+  --line:rgba(120,160,255,.12);
+  --line2:rgba(120,160,255,.2);
+  /* neon accents */
+  --cyan:#3df2e0;
+  --cyan-d:#1ad6c4;
+  --violet:#8b6dff;
+  --violet-glow:rgba(139,109,255,.5);
+  --pink:#ff5d9e;
+  --amber:#ffb347;
+  --green:#3bdc8e;
+  /* text */
+  --t1:#e8ecff;
+  --t2:#9aa3c7;
+  --t3:#5f6788;
+  --t4:#3f4straße;
+  --t4c:#454d6e;
+  --glass:rgba(20,26,46,.55);
+  --glow-cyan:0 0 0 1px rgba(61,242,224,.3),0 0 18px rgba(61,242,224,.18);
+  --glow-violet:0 0 0 1px rgba(139,109,255,.35),0 0 22px rgba(139,109,255,.22);
+  --radius:16px; --radius-sm:11px;
+  --ease:cubic-bezier(.4,0,.2,1);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{
-  font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
-  font-size:11px;font-weight:400;line-height:1.5;color:var(--color-ink);
-  -webkit-font-smoothing:antialiased;
-  display:flex;justify-content:center;align-items:center;min-height:100vh;
-  /* §4.1 메시 그라데이션 — 데스크톱 무대 배경 */
-  background:
-    radial-gradient(at 20% 10%,rgba(255,180,200,.30) 0%,transparent 50%),
-    radial-gradient(at 80% 20%,rgba(170,200,255,.35) 0%,transparent 50%),
-    radial-gradient(at 40% 80%,rgba(200,230,200,.30) 0%,transparent 50%),
-    radial-gradient(at 70% 90%,rgba(255,220,180,.25) 0%,transparent 50%),
-    #FAFAFC;
-  padding:16px;
-}
-button{font-family:inherit;cursor:pointer;border:none;background:none}
-input{font-family:inherit}
-:focus-visible{outline:2px solid var(--color-primary-focus);outline-offset:2px}
+body{font-family:var(--font);font-size:11px;font-weight:400;line-height:1.5;color:var(--t1);
+  -webkit-font-smoothing:antialiased;display:flex;justify-content:center;align-items:center;min-height:100vh;
+  padding:20px;background:
+    radial-gradient(at 20% 0%,rgba(139,109,255,.18) 0,transparent 45%),
+    radial-gradient(at 85% 100%,rgba(61,242,224,.12) 0,transparent 45%),
+    var(--bg0)}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input{font-family:inherit;outline:none}
+:focus-visible{outline:1px solid var(--cyan);outline-offset:2px}
 ::-webkit-scrollbar{width:0;height:0}
+.mono{font-family:var(--mono);letter-spacing:.02em}
 
-/* ═══════════ DEVICE FRAME ═══════════ */
-.device{
-  width:390px;height:820px;max-width:480px;border-radius:44px;overflow:hidden;position:relative;
-  display:flex;flex-direction:column;
-  box-shadow:0 40px 100px rgba(50,50,70,.32),0 0 0 12px #1c1c1e,0 0 0 13px #3a3a3c;
-  /* 기기 내부도 동일 메시 — 글래스가 위에 얹혀 색이 비침 */
+/* device */
+.device{width:390px;height:824px;border-radius:42px;overflow:hidden;position:relative;
+  display:flex;flex-direction:column;background:var(--bg1);
+  box-shadow:0 40px 100px rgba(0,0,0,.6),0 0 0 11px #02030a,0 0 0 12px rgba(139,109,255,.25),
+    0 0 60px rgba(139,109,255,.15)}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:118px;height:28px;
+  background:#02030a;border-radius:0 0 16px 16px;z-index:600}
+/* scanline + grid texture */
+.device::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:580;opacity:.5;
   background:
-    radial-gradient(at 18% 8%,rgba(255,180,200,.34) 0%,transparent 52%),
-    radial-gradient(at 85% 16%,rgba(170,200,255,.40) 0%,transparent 52%),
-    radial-gradient(at 35% 78%,rgba(200,230,200,.34) 0%,transparent 52%),
-    radial-gradient(at 75% 95%,rgba(255,220,180,.28) 0%,transparent 52%),
-    #FAFAFC;
-}
-.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:130px;height:30px;
-  background:#1c1c1e;border-radius:0 0 18px 18px;z-index:600}
+    linear-gradient(rgba(61,242,224,.025) 1px,transparent 1px) 0 0/100% 3px,
+    radial-gradient(circle at 50% 50%,transparent 60%,rgba(5,6,12,.4))}
+.device::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:581;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h80v80h-80z' fill='none' stroke='%233df2e0' stroke-width='.5'/%3E%3C/svg%3E");
+  background-size:40px 40px}
 
-/* ═══════════ TOP BAR (글래스, 다크 아님 — Al-Aseo는 라이트 글래스) ═══════════ */
-.top{
-  flex-shrink:0;padding:30px 15px 10px;display:flex;align-items:center;gap:11px;
-  background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.32));
-  -webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);
-  border-bottom:1px solid rgba(255,255,255,.55);position:relative;z-index:200;
-}
-.top-avi{width:34px;height:34px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;
-  justify-content:center;color:#fff;font-weight:700;font-size:12px;
-  background:linear-gradient(135deg,#0066CC,#4DA3FF);box-shadow:0 4px 12px rgba(0,102,204,.25)}
+/* ───── TOP BAR ───── */
+.top{flex-shrink:0;padding:32px 16px 11px;display:flex;align-items:center;gap:10px;position:relative;z-index:200;
+  background:linear-gradient(180deg,rgba(14,19,34,.9),rgba(14,19,34,.4));
+  border-bottom:1px solid var(--line);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.top-avi{width:36px;height:36px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;color:#05060c;font-weight:700;font-size:14px;position:relative;
+  box-shadow:var(--glow-violet)}
+.top-avi::after{content:"";position:absolute;bottom:-1px;right:-1px;width:9px;height:9px;border-radius:50%;
+  background:var(--cyan);border:2px solid var(--bg2);box-shadow:0 0 8px var(--cyan)}
 .top-info{flex:1;min-width:0}
-.top-name{font-size:13px;font-weight:600;letter-spacing:-.01em;color:var(--color-ink);
-  display:flex;align-items:center;gap:6px}
-.top-on{width:7px;height:7px;border-radius:50%;background:#34C759}
-.top-sub{font-size:10px;color:var(--color-muted-48)}
-.top-ico{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:13px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.65);
-  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.top-name{font-size:13px;font-weight:600;letter-spacing:-.01em;display:flex;align-items:center;gap:6px;color:var(--t1)}
+.top-sync{font-size:8px;font-weight:600;letter-spacing:.08em;color:var(--cyan);text-transform:uppercase;
+  font-family:var(--mono)}
+.top-sub{font-size:10px;color:var(--t3);margin-top:1px;font-family:var(--mono)}
+.lang-chip{height:28px;padding:0 10px;border-radius:14px;font-size:10px;font-weight:600;flex-shrink:0;
+  background:var(--glass);border:1px solid var(--line2);color:var(--t2);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:flex;align-items:center;gap:4px;font-family:var(--mono)}
+.top-ico{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  font-size:15px;background:var(--glass);border:1px solid var(--line);position:relative}
+.top-badge{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--pink);
+  box-shadow:0 0 8px var(--pink);border:1.5px solid var(--bg2)}
 
-/* ═══════════ SCREEN ═══════════ */
-.screen{flex:1;overflow-y:auto;overflow-x:hidden;position:relative}
-.view{display:none;padding:11px 11px 16px}
-.view.on{display:block}
-.bento{display:grid;grid-template-columns:1fr 1fr;gap:10px;opacity:0;
-  transition:opacity .35s cubic-bezier(.4,0,.2,1)}
-.bento.mounted{opacity:1}
+/* screen */
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;z-index:100}
+.view{display:none;padding:13px 13px 18px}
+.view.on{display:block;animation:boot .4s var(--ease)}
+@keyframes boot{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.bento{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-.page-title{font-size:18px;font-weight:700;letter-spacing:-.02em;margin-bottom:14px;padding:2px}
-.sec-title{font-size:14px;font-weight:600;letter-spacing:-.01em;margin:6px 2px 10px}
+.page-title{font-size:18px;font-weight:700;letter-spacing:-.02em;margin-bottom:11px;padding:2px;color:var(--t1)}
+.page-title .mono{font-size:9px;color:var(--cyan);display:block;font-weight:600;letter-spacing:.1em;margin-bottom:3px}
+.sec-label{grid-column:1/-1;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--t3);font-family:var(--mono);padding:6px 2px 0;display:flex;align-items:center;gap:7px}
+.sec-label::before{content:"";width:5px;height:5px;background:var(--cyan);border-radius:1px;box-shadow:0 0 6px var(--cyan)}
 
-/* ═══════════ GLASS SURFACES (§3) ═══════════ */
-.cell{ /* 메인 글래스 0.55 */
-  background:rgba(255,255,255,.55);
-  -webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%);
-  border:1px solid rgba(255,255,255,.65);
-  box-shadow:0 1px 0 rgba(255,255,255,.65) inset,0 6px 24px rgba(50,50,70,.05);
-  border-radius:14px;padding:13px;
-}
-.cell--hero{ /* 헤로 글래스 0.70→0.45, 풀폭 */
-  grid-column:1/-1;
-  background:linear-gradient(135deg,rgba(255,255,255,.70) 0%,rgba(255,255,255,.45) 100%);
-  -webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);
-  border:1px solid rgba(255,255,255,.80);
-  box-shadow:0 1px 0 rgba(255,255,255,.90) inset,0 -1px 0 rgba(255,255,255,.30) inset,
-    0 12px 40px rgba(50,50,70,.08);
-  border-radius:18px;padding:20px;
-}
+/* glass cells */
+.cell{background:var(--glass);border:1px solid var(--line);border-radius:var(--radius);padding:13px;
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.cell--hero{grid-column:1/-1;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,rgba(139,109,255,.18),rgba(61,242,224,.08)),var(--bg2);
+  border:1px solid var(--line2);border-radius:18px;padding:16px;box-shadow:var(--glow-violet)}
+.cell--hero::after{content:"";position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle,var(--violet-glow),transparent 70%)}
 .cell--full{grid-column:1/-1}
-.cell--cta{grid-column:1/-1;background:linear-gradient(135deg,#0066CC 0%,#4DA3FF 100%);
-  color:#fff;border:none;box-shadow:0 10px 30px rgba(0,102,204,.28)}
-.cell--stat{text-align:left}
+.cell--stat{position:relative}
+.tappable{transition:transform .16s var(--ease),box-shadow .16s var(--ease)}
+.tappable:active{transform:scale(.98)}
+.cell--stat.tappable:hover,.feed-card.tappable:hover{box-shadow:var(--glow-cyan)}
 
-/* 카드 hover (§7.1 절제) */
-.cell,.feed-card,.pl-card,.st-item{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
-.tappable:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(50,50,70,.10)}
-.tappable:active{transform:scale(.99)}
+.hero-eyebrow{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);font-family:var(--mono)}
+.hero-title{font-size:22px;font-weight:800;letter-spacing:-.03em;margin-top:5px;color:var(--t1);position:relative}
+.hero-days{font-size:9px;color:var(--t3);margin-top:5px;font-family:var(--mono)}
+.hero-msg{font-size:11px;line-height:1.55;color:var(--t2);margin-top:11px;position:relative}
 
-/* ═══════════ HERO ═══════════ */
-.hero-eyebrow{font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
-  color:var(--color-primary)}
-.hero-title{font-size:22px;font-weight:800;letter-spacing:-.03em;margin-top:6px;line-height:1.15}
-.hero-days{font-size:10px;color:var(--color-muted-48);margin-top:7px}
-.hero-msg{font-size:11px;line-height:1.55;color:var(--color-muted-80);margin-top:13px}
+.stat-n{font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1;color:var(--cyan)}
+.stat-n.violet{color:var(--violet)}
+.stat-l{font-size:9px;color:var(--t3);margin-top:6px;font-family:var(--mono);letter-spacing:.04em}
+.stat-ico-mini{position:absolute;top:13px;right:13px;font-size:13px;opacity:.5}
 
-/* stat 셀 (§5.2) */
-.stat-n{font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1;
-  background:linear-gradient(135deg,#0066CC,#4DA3FF);-webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent;color:transparent}
-.stat-l{font-size:10px;color:var(--color-muted-48);margin-top:7px}
+/* upcoming */
+.upcoming{display:flex;align-items:flex-start;gap:11px;grid-column:1/-1;
+  background:linear-gradient(135deg,rgba(61,242,224,.1),rgba(20,26,46,.5));border:1px solid rgba(61,242,224,.22)}
+.upcoming-ico{width:34px;height:34px;border-radius:10px;background:rgba(61,242,224,.12);display:flex;
+  align-items:center;justify-content:center;font-size:15px;flex-shrink:0;box-shadow:0 0 12px rgba(61,242,224,.15)}
+.upcoming-body{flex:1;min-width:0}
+.upcoming-label{font-size:9px;font-weight:700;letter-spacing:.06em;color:var(--cyan);font-family:var(--mono)}
+.upcoming-text{font-size:10px;line-height:1.55;color:var(--t2);margin-top:4px}
 
-/* ═══════════ HOME FEED CARD ═══════════ */
-.feed-card{grid-column:1/-1;border-radius:13px;overflow:hidden;
-  background:rgba(255,255,255,.55);-webkit-backdrop-filter:blur(16px) saturate(140%);
-  backdrop-filter:blur(16px) saturate(140%);border:1px solid rgba(255,255,255,.65);
-  box-shadow:0 6px 24px rgba(50,50,70,.05)}
-.fc-photo{height:108px;display:flex;align-items:center;justify-content:center;position:relative;
-  background:linear-gradient(135deg,#c2b3e0,#8aa3d4)}
-.fc-photo .emoji{font-size:40px;opacity:.78}
-.fc-tag{position:absolute;top:11px;left:11px;font-size:9px;font-weight:600;color:#fff;
-  background:rgba(0,0,0,.32);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
-  padding:4px 10px;border-radius:20px}
+/* feed card */
+.feed-card{grid-column:1/-1;border-radius:var(--radius);overflow:hidden;background:var(--glass);
+  border:1px solid var(--line);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.fc-photo{height:104px;display:flex;align-items:center;justify-content:center;position:relative}
+.fc-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(10,13,24,.6))}
+.fc-photo .emoji{font-size:42px;opacity:.92;position:relative;z-index:1;filter:drop-shadow(0 0 14px rgba(255,255,255,.3))}
+.fc-tag{position:absolute;top:10px;left:10px;font-size:8px;font-weight:700;letter-spacing:.06em;z-index:2;
+  font-family:var(--mono);text-transform:uppercase;color:var(--cyan);background:rgba(5,6,12,.55);
+  border:1px solid rgba(61,242,224,.3);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  padding:3px 8px;border-radius:6px}
 .fc-body{padding:11px}
-.fc-title{font-size:13px;font-weight:600;letter-spacing:-.01em}
-.fc-text{font-size:11px;line-height:1.55;color:var(--color-muted-80);margin-top:6px}
-.fc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
-.fc-react{display:flex;gap:8px}
-.react-btn{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--color-muted-48);
-  background:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.55);
-  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);padding:7px 12px;border-radius:20px}
-.react-btn.on{color:var(--color-primary);border-color:rgba(0,102,204,.25)}
+.fc-title{font-size:12px;font-weight:700;letter-spacing:-.01em;color:var(--t1)}
+.fc-text{font-size:10px;line-height:1.55;color:var(--t2);margin-top:5px}
+.fc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:11px}
+.fc-react{display:flex;gap:7px}
+.react-btn{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:var(--t2);
+  background:var(--bg3);border:1px solid var(--line);padding:6px 10px;border-radius:16px;font-family:var(--mono)}
+.react-btn.on{color:var(--pink);border-color:rgba(255,93,158,.4);box-shadow:0 0 10px rgba(255,93,158,.2)}
 
 /* feed end */
-.feed-end{grid-column:1/-1;text-align:center;padding:28px 18px;
-  background:rgba(255,255,255,.40);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,.55);border-radius:14px}
-.feed-end .ico{font-size:30px;opacity:.8}
-.feed-end-t{font-size:13px;font-weight:600;margin-top:8px}
-.feed-end-s{font-size:10px;color:var(--color-muted-48);margin-top:6px;line-height:1.5}
+.feed-end{grid-column:1/-1;text-align:center;padding:22px 16px;border-radius:var(--radius);
+  background:var(--glass);border:1px dashed var(--line2)}
+.feed-end .ico{font-size:30px;filter:drop-shadow(0 0 12px rgba(61,242,224,.4))}
+.feed-end-t{font-size:12px;font-weight:700;margin-top:7px;color:var(--t1)}
+.feed-end-s{font-size:10px;color:var(--t3);margin-top:5px;line-height:1.5}
 
-/* ═══════════ CHIPS (§6.2) ═══════════ */
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.chip{display:inline-flex;align-items:center;padding:8px 14px;border-radius:20px;font-size:10px;
-  background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.7);
-  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--color-muted-80)}
-.chip.is-active{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+/* chips */
+.chip{display:inline-flex;align-items:center;padding:6px 11px;border-radius:14px;font-size:10px;font-family:var(--mono);
+  background:var(--bg3);border:1px solid var(--line);color:var(--t2)}
+.chip.is-active{background:rgba(139,109,255,.18);color:var(--violet);border-color:var(--violet);box-shadow:var(--glow-violet)}
 
-/* ═══════════ CHAT (글래스 대화) ═══════════ */
-.chat-wrap{display:flex;flex-direction:column;height:100%;padding:0}
-.chat-guard{flex-shrink:0;margin:12px 14px 0;padding:9px 13px;border-radius:12px;font-size:10px;
-  color:#1e6b3e;display:flex;align-items:center;gap:7px;
-  background:rgba(220,245,228,.55);border:1px solid rgba(52,199,89,.28);
-  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:11px}
-.msg{display:flex;gap:8px;max-width:84%}
+/* chat */
+.chat-wrap{display:flex;flex-direction:column;height:100%}
+.chat-guard{flex-shrink:0;margin:11px 13px 0;padding:8px 12px;border-radius:11px;font-size:9px;font-weight:600;
+  color:var(--cyan);font-family:var(--mono);letter-spacing:.03em;display:flex;align-items:center;gap:6px;
+  background:rgba(61,242,224,.08);border:1px solid rgba(61,242,224,.22)}
+.chat-msgs{flex:1;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:9px}
+.msg{display:flex;gap:7px;max-width:84%}
 .msg.ai{align-self:flex-start}
 .msg.user{align-self:flex-end;flex-direction:row-reverse}
-.msg-avi{width:30px;height:30px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;
-  justify-content:center;color:#fff;font-size:10px;font-weight:700;
-  background:linear-gradient(135deg,#0066CC,#4DA3FF)}
+.msg-avi{width:28px;height:28px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;color:#05060c;font-size:10px;font-weight:700;box-shadow:0 0 10px var(--violet-glow)}
 .msg.user .msg-avi{display:none}
-.bubble{padding:11px 14px;font-size:11px;line-height:1.5;border-radius:16px}
-.msg.ai .bubble{background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.7);
-  -webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);
-  border-bottom-left-radius:4px;box-shadow:0 4px 16px rgba(50,50,70,.05)}
-.msg.user .bubble{background:linear-gradient(135deg,#0066CC,#4DA3FF);color:#fff;
-  border-bottom-right-radius:4px;box-shadow:0 4px 14px rgba(0,102,204,.22)}
+.bubble{padding:9px 12px;font-size:11px;line-height:1.5;border-radius:13px}
+.msg.ai .bubble{background:var(--bg3);border:1px solid var(--line);color:var(--t1);border-bottom-left-radius:3px}
+.msg.user .bubble{background:linear-gradient(135deg,var(--violet),#6d52e0);color:#fff;border-bottom-right-radius:3px;
+  box-shadow:0 0 14px var(--violet-glow)}
 .msg.system{align-self:center}
-.msg.system .bubble{background:rgba(255,255,255,.40);color:var(--color-muted-48);font-size:9px;
-  border-radius:20px;padding:6px 14px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-.chat-ft{flex-shrink:0;padding:12px 14px;display:flex;gap:9px;align-items:center;
-  background:linear-gradient(0deg,rgba(255,255,255,.7),rgba(255,255,255,.3));
-  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
-  border-top:1px solid rgba(255,255,255,.55)}
-.chat-input{flex:1;height:36px;border-radius:20px;padding:0 16px;font-size:11px;color:var(--color-ink);
-  background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.8)}
-.chat-input::placeholder{color:var(--color-placeholder)}
-.icon-circle{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;
-  justify-content:center;font-size:13px}
-.send{background:linear-gradient(135deg,#0066CC,#4DA3FF);color:#fff;box-shadow:0 4px 12px rgba(0,102,204,.25)}
-.voice{background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.75);color:var(--color-primary);
-  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.msg.system .bubble{background:transparent;color:var(--t3);font-size:9px;font-family:var(--mono);padding:4px 0;letter-spacing:.04em}
+.chat-ft{flex-shrink:0;padding:11px 13px;display:flex;gap:8px;align-items:center;
+  background:linear-gradient(0deg,rgba(14,19,34,.95),rgba(14,19,34,.5));border-top:1px solid var(--line);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.chat-input{flex:1;height:36px;border-radius:18px;padding:0 15px;font-size:11px;color:var(--t1);
+  background:var(--bg3);border:1px solid var(--line)}
+.chat-input::placeholder{color:var(--t4c)}
+.icon-circle{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px}
+.send{background:linear-gradient(135deg,var(--cyan),var(--cyan-d));color:#05060c;box-shadow:0 0 14px rgba(61,242,224,.4)}
+.voice{background:var(--bg3);border:1px solid var(--line);color:var(--cyan)}
 
-/* ═══════════ PERSONA ═══════════ */
-.pl-card{grid-column:1/-1;display:flex;gap:13px;align-items:flex-start;
-  background:rgba(255,255,255,.55);-webkit-backdrop-filter:blur(16px) saturate(140%);
-  backdrop-filter:blur(16px) saturate(140%);border:1px solid rgba(255,255,255,.65);
-  box-shadow:0 6px 24px rgba(50,50,70,.05);border-radius:14px;padding:15px}
-.pl-avi{width:50px;height:50px;border-radius:16px;flex-shrink:0;display:flex;align-items:center;
-  justify-content:center;color:#fff;font-size:18px;font-weight:700}
+/* persona */
+.pl-card{grid-column:1/-1;display:flex;gap:11px;align-items:flex-start;background:var(--glass);
+  border:1px solid var(--line);border-radius:var(--radius);padding:13px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.pl-avi{width:50px;height:50px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  color:#05060c;font-size:18px;font-weight:700;box-shadow:0 0 16px var(--violet-glow)}
 .pl-info{flex:1;min-width:0}
-.pl-name{font-size:13px;font-weight:600;letter-spacing:-.01em}
-.pl-style{display:inline-block;margin-top:5px;font-size:9px;color:var(--color-primary);font-weight:600;
-  background:rgba(0,102,204,.08);padding:3px 10px;border-radius:20px}
-.pl-line{font-size:10px;line-height:1.5;color:var(--color-muted-80);margin-top:9px;font-style:italic}
-.pl-about{font-size:12.5px;line-height:1.55;color:var(--color-muted-48);margin-top:9px}
-.pl-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.pl-tag{font-size:9px;font-weight:600;color:var(--color-primary);background:rgba(0,102,204,.08);padding:3px 10px;border-radius:14px}
+.pl-name{font-size:13px;font-weight:700;color:var(--t1)}
+.pl-style{display:inline-block;margin-top:4px;font-size:9px;color:var(--cyan);font-family:var(--mono);
+  background:rgba(61,242,224,.1);border:1px solid rgba(61,242,224,.25);padding:2px 8px;border-radius:12px;letter-spacing:.04em}
+.pl-line{font-size:10px;line-height:1.5;color:var(--t2);margin-top:8px;font-style:italic}
+.pl-about{font-size:10px;line-height:1.55;color:var(--t3);margin-top:7px}
+.pl-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.pl-tag{font-size:9px;font-weight:600;color:var(--violet);background:rgba(139,109,255,.12);
+  border:1px solid rgba(139,109,255,.25);padding:2px 8px;border-radius:11px;font-family:var(--mono)}
 
-/* ═══════════ WELLBEING ═══════════ */
-.wb-bar-wrap{margin-top:6px}
-.wb-bar-top{display:flex;justify-content:space-between;font-size:10px;color:var(--color-muted-48);margin-bottom:6px}
-.wb-bar{height:9px;background:rgba(0,0,0,.06);border-radius:20px;overflow:hidden}
-.wb-bar-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#0066CC,#4DA3FF)}
-.wb-bar-fill.warn{background:linear-gradient(90deg,#FF6B35,#FF4500)}
-.nudge{grid-column:1/-1;background:rgba(255,237,225,.55);border:1px solid rgba(255,107,53,.3);
-  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-radius:14px;padding:16px;
-  box-shadow:0 6px 24px rgba(50,50,70,.05)}
-.nudge-t{font-size:12px;font-weight:600;color:#c2410c;display:flex;align-items:center;gap:8px}
-.nudge-s{font-size:10px;line-height:1.55;color:var(--color-muted-80);margin-top:8px}
-.nudge-act{display:flex;gap:8px;margin-top:13px}
-.goal-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;
-  border-bottom:1px solid var(--color-divider)}
-.goal-row:last-child{border-bottom:none}
-.goal-l{font-size:11px}
-.goal-v{font-size:11px;color:var(--color-primary);font-weight:600}
-.tog{width:42px;height:24px;border-radius:20px;background:#E0E0E0;position:relative;transition:background .18s;flex-shrink:0}
-.tog.on{background:#34C759}
-.tog::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;
-  background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.2);transition:transform .18s}
-.tog.on::after{transform:translateX(18px)}
-
-/* ═══════════ MEMORY ═══════════ */
-.mem-intro{grid-column:1/-1;font-size:10px;line-height:1.55;color:var(--color-muted-80);
-  background:rgba(170,200,255,.20);border:1px solid rgba(0,102,204,.18);border-radius:12px;padding:14px}
-.mem-row{grid-column:1/-1;display:flex;align-items:flex-start;justify-content:space-between;gap:11px;
-  background:rgba(255,255,255,.45);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,.55);border-radius:12px;padding:14px}
-.mem-label{font-size:11px;font-weight:600}
-.mem-tag{display:inline-block;margin-top:5px;font-size:9px;color:var(--color-muted-48);
-  background:rgba(0,0,0,.05);padding:2px 9px;border-radius:20px}
-.mem-val{font-size:10px;color:var(--color-muted-80);margin-top:6px;line-height:1.5}
-
-/* ═══════════ STORE ═══════════ */
-.st-guard{grid-column:1/-1;background:rgba(220,245,228,.5);border:1px solid rgba(52,199,89,.28);
-  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-radius:12px;padding:12px 14px;
-  font-size:10px;line-height:1.5;color:#1e6b3e;display:flex;gap:8px}
-.st-item{grid-column:1/-1;display:flex;align-items:center;gap:13px;
-  background:rgba(255,255,255,.55);-webkit-backdrop-filter:blur(16px) saturate(140%);
-  backdrop-filter:blur(16px) saturate(140%);border:1px solid rgba(255,255,255,.65);
-  box-shadow:0 6px 24px rgba(50,50,70,.05);border-radius:14px;padding:15px}
-.st-ico{width:44px;height:44px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;
-  justify-content:center;font-size:19px;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.6)}
-.st-info{flex:1;min-width:0}
-.st-name{font-size:12px;font-weight:600;letter-spacing:-.01em}
-.st-val{font-size:10px;color:var(--color-muted-48);margin-top:4px;line-height:1.45}
-.st-limit{grid-column:1/-1;font-size:10px;color:var(--color-muted-48);text-align:center;padding:4px}
-
-/* ═══════════ BUTTONS (§6.3) ═══════════ */
-.btn{height:34px;padding:0 16px;border-radius:12px;font-size:11px;font-weight:600;
-  background:rgba(255,255,255,.7);border:1px solid var(--color-hairline);color:var(--color-ink);
-  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.btn--primary{background:var(--color-primary);color:#fff;border:none}
-.btn--ghost{background:transparent;border:1px solid var(--color-hairline);color:var(--color-muted-80)}
-.btn--danger{background:transparent;border:1px solid var(--color-danger);color:var(--color-danger)}
+/* buttons */
+.btn{height:34px;padding:0 14px;border-radius:11px;font-size:11px;font-weight:600;
+  background:var(--bg3);border:1px solid var(--line2);color:var(--t1)}
+.btn--primary{background:linear-gradient(135deg,var(--violet),#6d52e0);border:none;color:#fff;box-shadow:0 0 16px var(--violet-glow)}
+.btn--ghost{background:transparent;border:1px solid var(--line2);color:var(--t2)}
+.btn--danger{background:transparent;border:1px solid rgba(255,93,158,.4);color:var(--pink)}
 .btn--block{width:100%}
-.btn--sm{height:29px;padding:0 13px;font-size:10px;border-radius:10px}
+.btn--sm{height:29px;padding:0 12px;font-size:10px;border-radius:9px}
 
-/* ═══════════ BOTTOM TAB (글래스 dock) ═══════════ */
-.tabbar{flex-shrink:0;height:60px;display:flex;padding:0 8px 8px;
-  background:linear-gradient(0deg,rgba(255,255,255,.78),rgba(255,255,255,.42));
-  -webkit-backdrop-filter:blur(20px) saturate(150%);backdrop-filter:blur(20px) saturate(150%);
-  border-top:1px solid rgba(255,255,255,.6)}
+/* wellbeing */
+.wb-bar-wrap{margin-top:5px}
+.wb-bar-top{display:flex;justify-content:space-between;font-size:10px;color:var(--t3);margin-bottom:5px;font-family:var(--mono)}
+.wb-bar{height:8px;background:var(--bg3);border-radius:16px;overflow:hidden;border:1px solid var(--line)}
+.wb-bar-fill{height:100%;border-radius:16px;background:linear-gradient(90deg,var(--cyan),var(--violet));box-shadow:0 0 10px rgba(61,242,224,.3)}
+.wb-bar-fill.warn{background:linear-gradient(90deg,var(--amber),var(--pink))}
+.nudge{grid-column:1/-1;background:linear-gradient(135deg,rgba(255,179,71,.12),rgba(20,26,46,.5));
+  border:1px solid rgba(255,179,71,.3);border-radius:var(--radius);padding:14px}
+.nudge-t{font-size:12px;font-weight:700;color:var(--amber);display:flex;align-items:center;gap:7px}
+.nudge-s{font-size:10px;line-height:1.55;color:var(--t2);margin-top:7px}
+.nudge-act{display:flex;gap:7px;margin-top:11px}
+.goal-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line)}
+.goal-row:last-child{border-bottom:none}
+.goal-l{font-size:11px;color:var(--t1)}
+.goal-v{font-size:11px;color:var(--cyan);font-weight:600;font-family:var(--mono)}
+.tog{width:42px;height:24px;border-radius:16px;background:var(--bg3);border:1px solid var(--line2);position:relative;transition:all .18s;flex-shrink:0}
+.tog.on{background:rgba(61,242,224,.2);border-color:var(--cyan);box-shadow:0 0 12px rgba(61,242,224,.3)}
+.tog::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--t2);transition:all .18s}
+.tog.on::after{transform:translateX(18px);background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+
+/* memory */
+.mem-intro{grid-column:1/-1;font-size:10px;line-height:1.55;color:var(--t2);
+  background:rgba(139,109,255,.1);border:1px solid rgba(139,109,255,.25);border-radius:11px;padding:12px}
+.mem-row{grid-column:1/-1;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+  background:var(--glass);border:1px solid var(--line);border-radius:11px;padding:12px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.mem-label{font-size:11px;font-weight:700;color:var(--t1)}
+.mem-tag{display:inline-block;margin-top:4px;font-size:9px;color:var(--t3);background:var(--bg3);padding:2px 8px;border-radius:10px;font-family:var(--mono)}
+.mem-val{font-size:10px;color:var(--t2);margin-top:5px;line-height:1.5}
+
+/* store */
+.st-guard{grid-column:1/-1;background:rgba(61,242,224,.08);border:1px solid rgba(61,242,224,.22);
+  border-radius:11px;padding:11px 13px;font-size:9px;line-height:1.5;color:var(--cyan);font-family:var(--mono);display:flex;gap:7px}
+.st-item{grid-column:1/-1;display:flex;align-items:center;gap:11px;background:var(--glass);border:1px solid var(--line);
+  border-radius:var(--radius);padding:13px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.st-ico{width:44px;height:44px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:21px;background:var(--bg3);border:1px solid var(--line2)}
+.st-info{flex:1;min-width:0}
+.st-name{font-size:12px;font-weight:700;color:var(--t1)}
+.st-val{font-size:9px;color:var(--t3);margin-top:3px;line-height:1.45}
+.st-limit{grid-column:1/-1;font-size:9px;color:var(--t4c);text-align:center;padding:4px;font-family:var(--mono)}
+
+/* tab bar */
+.tabbar{flex-shrink:0;height:60px;display:flex;padding:0 8px 8px;position:relative;z-index:200;
+  background:linear-gradient(0deg,rgba(14,19,34,.96),rgba(14,19,34,.6));border-top:1px solid var(--line);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-  color:var(--color-muted-48);font-size:9px}
-.tab .ti{font-size:15px;line-height:1}
-.tab.on{color:var(--color-primary)}
+  color:var(--t4c);font-size:8px;font-family:var(--mono);letter-spacing:.04em}
+.tab .ti{font-size:17px;line-height:1}
+.tab.on{color:var(--cyan)}
+.tab.on .ti{filter:drop-shadow(0 0 8px var(--cyan))}
 
-/* lang chip + alert badge */
-.lang-chip{height:30px;padding:0 11px;border-radius:16px;font-size:9px;font-weight:600;flex-shrink:0;
-  background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.65);color:var(--color-muted-80);
-  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:flex;align-items:center;gap:4px}
-.top-badge{position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--color-rising);border:1.5px solid #fff}
+/* call overlay (cyber MERA) */
+.call-overlay{position:absolute;inset:0;z-index:650;display:none;flex-direction:column;align-items:center;
+  justify-content:space-between;padding:42px 20px 28px;color:#fff;
+  background:radial-gradient(at 50% 30%,rgba(139,109,255,.4),transparent 60%),
+    linear-gradient(160deg,#0a0d18,#141a2e)}
+.call-overlay.on{display:flex;animation:boot .35s var(--ease)}
+.call-overlay::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background:linear-gradient(rgba(61,242,224,.03) 1px,transparent 1px) 0 0/100% 3px}
+.call-top{width:100%;display:flex;justify-content:center;position:relative;z-index:1}
+.call-mera{font-size:9px;font-weight:600;font-family:var(--mono);letter-spacing:.06em;color:var(--cyan);
+  background:rgba(61,242,224,.1);border:1px solid rgba(61,242,224,.3);padding:6px 13px;border-radius:16px}
+.call-avi-wrap{text-align:center;position:relative;z-index:1}
+.call-avi{width:98px;height:98px;border-radius:28px;margin:0 auto;display:flex;align-items:center;justify-content:center;
+  font-size:38px;font-weight:700;color:#05060c;background:linear-gradient(135deg,var(--cyan),var(--violet));
+  box-shadow:0 0 40px var(--violet-glow),0 0 80px rgba(61,242,224,.2)}
+.call-name{font-size:20px;font-weight:800;letter-spacing:-.02em;margin-top:16px;color:var(--t1)}
+.call-status{font-size:11px;color:var(--t2);margin-top:7px;font-family:var(--mono)}
+.call-emotion{width:100%;background:var(--glass);border:1px solid var(--line2);border-radius:16px;padding:14px;
+  position:relative;z-index:1;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.call-emotion-label{font-size:9px;font-weight:700;color:var(--cyan);font-family:var(--mono);letter-spacing:.04em}
+.call-emotion-tags{display:flex;gap:7px;margin-top:10px}
+.emo-tag{flex:1;font-size:10px;font-weight:600;text-align:center;padding:8px 4px;border-radius:11px;
+  background:var(--bg3);border:1px solid var(--line);color:var(--t2)}
+.emo-tag.on{background:rgba(61,242,224,.15);color:var(--cyan);border-color:var(--cyan);box-shadow:0 0 12px rgba(61,242,224,.25)}
+.call-emotion-note{font-size:9px;color:var(--t3);margin-top:10px;line-height:1.5}
+.call-actions{display:flex;gap:18px;align-items:center;position:relative;z-index:1}
+.call-btn{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;
+  background:var(--glass);border:1px solid var(--line2);color:var(--t1);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.call-btn.end{background:var(--pink);border-color:var(--pink);width:60px;height:60px;font-size:22px;color:#fff;box-shadow:0 0 24px rgba(255,93,158,.5)}
 
-/* upcoming (예약된 안부 — 능동적 기억) */
-.upcoming{display:flex;align-items:flex-start;gap:12px;
-  background:linear-gradient(135deg,rgba(0,102,204,.07),rgba(77,163,255,.04));
-  border:1px solid rgba(0,102,204,.16)}
-.upcoming-ico{width:36px;height:36px;border-radius:11px;background:rgba(0,102,204,.1);display:flex;
-  align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
-.upcoming-body{flex:1;min-width:0}
-.upcoming-label{font-size:9px;font-weight:700;letter-spacing:.04em;color:var(--color-primary)}
-.upcoming-text{font-size:10px;line-height:1.55;color:var(--color-muted-80);margin-top:5px}
-
-/* call overlay (건강 MERA) */
-.call-overlay{position:absolute;inset:0;z-index:650;display:none;flex-direction:column;
-  align-items:center;justify-content:space-between;padding:46px 22px 30px;
-  background:linear-gradient(160deg,#0a3a6e,#0066CC 55%,#4DA3FF);color:#fff}
-.call-overlay.on{display:flex}
-.call-top{width:100%;display:flex;justify-content:center}
-.call-mera{font-size:9px;font-weight:600;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);
-  padding:6px 13px;border-radius:20px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.call-avi-wrap{text-align:center}
-.call-avi{width:104px;height:104px;border-radius:32px;margin:0 auto;display:flex;align-items:center;
-  justify-content:center;font-size:32px;font-weight:700;background:rgba(255,255,255,.18);
-  border:2px solid rgba(255,255,255,.4);box-shadow:0 12px 40px rgba(0,0,0,.25)}
-.call-name{font-size:19px;font-weight:800;letter-spacing:-.02em;margin-top:18px}
-.call-status{font-size:10px;color:rgba(255,255,255,.82);margin-top:8px}
-.call-emotion{width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
-  border-radius:18px;padding:16px;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
-.call-emotion-label{font-size:9px;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:.03em}
-.call-emotion-tags{display:flex;gap:8px;margin-top:11px}
-.emo-tag{flex:1;font-size:10px;font-weight:600;text-align:center;padding:9px 4px;border-radius:12px;
-  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);transition:all .2s}
-.emo-tag.on{background:#fff;color:#0066CC;border-color:#fff}
-.call-emotion-note{font-size:9px;color:rgba(255,255,255,.75);margin-top:11px;line-height:1.5}
-.call-actions{display:flex;gap:20px;align-items:center}
-.call-btn{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:18px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);color:#fff;
-  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:transform .15s}
-.call-btn:active{transform:scale(.9)}
-.call-btn.end{background:#FF3B30;border-color:#FF3B30;width:64px;height:64px;font-size:19px}
-
-/* ═══════════ MODAL ═══════════ */
-.modal-bg{position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:700;display:none;
-  align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+/* modal */
+.modal-bg{position:absolute;inset:0;background:rgba(2,3,10,.7);z-index:700;display:none;align-items:flex-end;
+  justify-content:center;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .modal-bg.on{display:flex}
-.modal{width:100%;border-radius:20px 20px 0 0;padding:22px 18px 26px;
-  background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.82));
-  -webkit-backdrop-filter:blur(24px) saturate(150%);backdrop-filter:blur(24px) saturate(150%);
-  border-top:1px solid rgba(255,255,255,.85);animation:slideup .25s ease}
-@keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
-.modal-t{font-size:14px;font-weight:700;letter-spacing:-.01em}
-.modal-row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--color-divider);font-size:11px}
-.modal-row .k{color:var(--color-muted-48)} .modal-row .v{font-weight:600}
-.modal-note{font-size:10px;color:var(--color-muted-48);margin-top:13px;line-height:1.5}
-.modal-act{display:flex;gap:9px;margin-top:17px}
+.modal{width:100%;border-radius:20px 20px 0 0;padding:20px 16px 24px;background:var(--bg2);
+  border-top:1px solid var(--line2);box-shadow:0 -10px 40px rgba(139,109,255,.15);animation:su .25s var(--ease)}
+@keyframes su{from{transform:translateY(100%)}to{transform:none}}
+.modal-t{font-size:15px;font-weight:700;color:var(--t1)}
+.modal-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:11px}
+.modal-row .k{color:var(--t3)} .modal-row .v{color:var(--t1);font-weight:600}
+.modal-note{font-size:9px;color:var(--t3);margin-top:11px;line-height:1.5;font-family:var(--mono)}
+.modal-act{display:flex;gap:8px;margin-top:14px}
+.modal-act button{flex:1;height:42px;border-radius:13px;font-size:12px;font-weight:600}
 
 /* toast */
-.toast{position:absolute;bottom:86px;left:50%;transform:translateX(-50%) translateY(16px);
-  background:rgba(28,28,30,.92);color:#fff;font-size:10px;padding:12px 18px;border-radius:14px;
-  opacity:0;transition:all .25s;z-index:800;pointer-events:none;max-width:84%;text-align:center;line-height:1.45;
-  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.toast{position:absolute;bottom:80px;left:50%;transform:translateX(-50%) translateY(14px);
+  background:var(--bg3);border:1px solid var(--line2);color:var(--t1);font-size:10px;padding:11px 16px;border-radius:13px;
+  opacity:0;transition:all .25s;z-index:800;pointer-events:none;max-width:82%;text-align:center;line-height:1.5;
+  white-space:pre-line;box-shadow:0 0 30px rgba(139,109,255,.2);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
@@ -353,116 +327,91 @@ input{font-family:inherit}
 
   <!-- TOP BAR -->
   <div class="top">
-    <div class="top-avi" id="top-avi">서</div>
+    <div class="top-avi" id="top-avi" style="background:linear-gradient(135deg,#8b6dff,#3df2e0)">서</div>
     <div class="top-info">
-      <div class="top-name"><span class="top-on"></span><span id="top-name">서도진</span></div>
-      <div class="top-sub" id="top-sub">든든한 조력형 · 함께한 지 27일</div>
+      <div class="top-name"><span id="top-name">서도진</span><span class="top-sync">· SYNCED</span></div>
+      <div class="top-sub" id="top-sub">든든한 조력형 · 27d linked</div>
     </div>
-    <button class="lang-chip" id="lang-chip" onclick="cycleLang()" title="언어/지역">🌐 <span id="lang-label">KO</span></button>
+    <button class="lang-chip" onclick="cycleLang()" title="언어/지역">🌐 <span id="lang-label">KO</span></button>
     <button class="top-ico" onclick="toast('새 안부 1건 · 홈에서 확인하세요')" title="알림">🔔<span class="top-badge"></span></button>
-    <button class="top-ico" onclick="go('wellbeing')" title="웰빙 센터">🌿</button>
+    <button class="top-ico" onclick="go('wellbeing')" title="웰빙">🌿</button>
   </div>
-
 
   <div class="screen">
 
     <!-- HOME -->
     <section class="view on" id="v-home">
-      <div class="bento mounted">
+      <div class="bento">
         <div class="cell--hero">
-          <div class="hero-eyebrow">오늘의 안부</div>
+          <div class="hero-eyebrow">// DAILY SYNC</div>
           <div class="hero-title" id="hero-name">서도진</div>
-          <div class="hero-days">함께한 지 27일</div>
+          <div class="hero-days mono" id="hero-days">LINK 27d · 오늘도 함께</div>
           <div class="hero-msg" id="hero-msg">"오늘 하루 어땠어? 무리한 건 없었고. 네 페이스대로 가도 괜찮아."</div>
         </div>
 
-        <div class="cell cell--full upcoming tappable" onclick="go('memory')">
-          <div class="upcoming-ico">📌</div>
-          <div class="upcoming-body">
-            <div class="upcoming-label">예약된 안부 · 기억에서</div>
-            <div class="upcoming-text" id="upcoming-text">"다음 주 발표 있다고 했지? 그날 아침에 응원 메시지 보낼게. 너무 부담 갖지 마."</div>
-          </div>
-        </div>
-
         <div class="cell cell--stat tappable" onclick="go('wellbeing')">
-          <div class="stat-n">48분</div><div class="stat-l">오늘 사용 · 웰빙</div>
+          <span class="stat-ico-mini">🌿</span>
+          <div class="stat-n">48<span style="font-size:11px">분</span></div><div class="stat-l">TODAY · 웰빙</div>
         </div>
         <div class="cell cell--stat tappable" onclick="go('memory')">
-          <div class="stat-n">3</div><div class="stat-l">기억 보관함</div>
+          <span class="stat-ico-mini">🗂</span>
+          <div class="stat-n violet">3</div><div class="stat-l">MEMORY 보관</div>
         </div>
 
         <div class="cell cell--full tappable" onclick="go('wellbeing')" style="display:flex;align-items:center;justify-content:space-between">
           <div>
-            <div class="hero-eyebrow">이번 주 함께한 시간</div>
-            <div style="font-size:18px;font-weight:800;letter-spacing:-.03em;margin-top:4px">5시간 12분</div>
-            <div style="font-size:10px;color:var(--color-muted-48);margin-top:3px">균형 잡힌 한 주예요 🌿</div>
+            <div class="hero-eyebrow">// WEEKLY</div>
+            <div style="font-size:18px;font-weight:800;letter-spacing:-.02em;margin-top:3px;color:var(--t1)">5h 12m</div>
+            <div style="font-size:9px;color:var(--t3);margin-top:2px;font-family:var(--mono)">균형 잡힌 한 주 🌿</div>
           </div>
-          <svg width="110" height="44" viewBox="0 0 110 44"><polyline points="0,32 16,26 30,30 46,16 62,22 80,11 98,16 110,7" fill="none" stroke="#0066CC" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="110" cy="7" r="4" fill="#0066CC"/></svg>
+          <svg width="104" height="40" viewBox="0 0 104 40"><polyline points="0,30 15,24 28,28 44,15 60,20 78,10 94,15 104,6" fill="none" stroke="#3df2e0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 4px #3df2e0)"/><circle cx="104" cy="6" r="3.5" fill="#3df2e0"/></svg>
         </div>
 
-        <div class="sec-title cell--full" style="background:none;border:none;box-shadow:none;padding:8px 2px 0;margin:0">오늘의 피드 · 3/3</div>
-
-        <div class="feed-card tappable">
-          <div class="fc-photo" style="background:linear-gradient(135deg,#a3e1c2,#7ec1e1)">
-            <span class="emoji">🌿</span><span class="fc-tag">일상</span>
-          </div>
-          <div class="fc-body">
-            <div class="fc-title">아침 공원에서</div>
-            <div class="fc-text">"날씨가 좋아서 너 생각났어. 너도 가끔은 바깥 공기 쐬어 — 잠깐이라도."</div>
-            <div class="fc-foot">
-              <div class="fc-react">
-                <button class="react-btn" onclick="react(this,event)">🤍 <span>1,204</span></button>
-                <button class="react-btn" onclick="go('chat')">💬 답장</button>
-              </div>
-            </div>
+        <div class="cell--full upcoming tappable" onclick="go('memory')">
+          <div class="upcoming-ico">📌</div>
+          <div class="upcoming-body">
+            <div class="upcoming-label">// SCHEDULED · from memory</div>
+            <div class="upcoming-text" id="upcoming-text">"다음 주 발표 있다고 했지? 그날 아침에 응원 메시지 보낼게. 너무 부담 갖지 마."</div>
           </div>
         </div>
 
+        <div class="sec-label">오늘의 피드 · 3/3</div>
+
         <div class="feed-card tappable">
-          <div class="fc-photo" style="background:linear-gradient(135deg,#c2b3e0,#8aa3d4)">
-            <span class="emoji">📖</span><span class="fc-tag">스토리</span>
-          </div>
-          <div class="fc-body">
-            <div class="fc-title">비 오는 날의 대화</div>
+          <div class="fc-photo" style="background:linear-gradient(135deg,#1a3a4a,#2a5a6a)"><span class="emoji">🌿</span><span class="fc-tag">daily</span></div>
+          <div class="fc-body"><div class="fc-title">아침 공원에서</div>
+            <div class="fc-text">"날씨가 좋아서 너 생각났어. 너도 가끔 바깥 공기 쐬어 — 잠깐이라도."</div>
+            <div class="fc-foot"><div class="fc-react"><button class="react-btn" onclick="react(this,event)">🤍 <span>1,204</span></button><button class="react-btn" onclick="go('chat')">💬 답장</button></div></div></div>
+        </div>
+        <div class="feed-card tappable">
+          <div class="fc-photo" style="background:linear-gradient(135deg,#2a2a5a,#4a3a7a)"><span class="emoji">📖</span><span class="fc-tag">story</span></div>
+          <div class="fc-body"><div class="fc-title">비 오는 날의 대화</div>
             <div class="fc-text">잔잔한 위로가 담긴 단편 3화. 미리보기 후 결정할 수 있어요.</div>
-            <div class="fc-foot">
-              <div class="fc-react"><button class="react-btn" onclick="react(this,event)">🤍 <span>892</span></button></div>
-              <button class="btn btn--primary btn--sm" onclick="openBuy('스토리팩 · 비 오는 날','단편 3화 영구 소장','1,200')">스토리 3화 · 1,200원</button>
-            </div>
-          </div>
+            <div class="fc-foot"><div class="fc-react"><button class="react-btn" onclick="react(this,event)">🤍 <span>892</span></button></div>
+            <button class="btn btn--primary btn--sm" onclick="openBuy('스토리팩 · 비 오는 날','단편 3화 영구 소장','1,200')">3화 · 1,200원</button></div></div>
         </div>
-
         <div class="feed-card tappable">
-          <div class="fc-photo" style="background:linear-gradient(135deg,#ffd9b3,#ffb38a)">
-            <span class="emoji">🌙</span><span class="fc-tag">위로</span>
-          </div>
-          <div class="fc-body">
-            <div class="fc-title">수고한 너에게</div>
+          <div class="fc-photo" style="background:linear-gradient(135deg,#3a2a4a,#5a3a5a)"><span class="emoji">🌙</span><span class="fc-tag">comfort</span></div>
+          <div class="fc-body"><div class="fc-title">수고한 너에게</div>
             <div class="fc-text">"오늘 충분히 잘했어. 결과가 어떻든 그 과정은 진짜였잖아. 푹 쉬어."</div>
-            <div class="fc-foot">
-              <div class="fc-react"><button class="react-btn" onclick="react(this,event)">🤍 <span>2,051</span></button><button class="react-btn" onclick="go('chat')">💬 답장</button></div>
-            </div>
-          </div>
+            <div class="fc-foot"><div class="fc-react"><button class="react-btn" onclick="react(this,event)">🤍 <span>2,051</span></button><button class="react-btn" onclick="go('chat')">💬 답장</button></div></div></div>
         </div>
 
-        <div class="feed-end">
-          <div class="ico">🌿</div>
-          <div class="feed-end-t">오늘의 피드를 모두 봤어요</div>
-          <div class="feed-end-s">새로운 이야기는 내일 다시 찾아올게요.<br>잠시 화면을 내려놓고 쉬어가는 건 어때요?</div>
-          <button class="btn btn--ghost btn--sm" style="margin-top:13px" onclick="go('wellbeing')">웰빙 센터 보기</button>
-        </div>
+        <div class="feed-end"><div class="ico">🌿</div><div class="feed-end-t">오늘의 피드를 모두 봤어요</div>
+          <div class="feed-end-s">새 이야기는 내일 다시 sync 될게요.<br>잠시 화면을 내려놓고 쉬어가는 건 어때요?</div>
+          <button class="btn btn--ghost btn--sm" style="margin-top:11px" onclick="go('wellbeing')">웰빙 센터 보기</button></div>
       </div>
     </section>
 
     <!-- CHAT -->
     <section class="view" id="v-chat" style="padding:0">
       <div class="chat-wrap">
-        <div class="chat-guard">🛡️ 안전 대화 · 통제·집착 표현은 시스템이 자동 차단합니다</div>
+        <div class="chat-guard">🛡️ SAFE LINK · 통제·집착 표현 자동 차단</div>
         <div class="chat-msgs" id="chat-msgs">
-          <div class="msg system"><div class="bubble">서도진과의 대화 · 오늘</div></div>
-          <div class="msg ai"><div class="msg-avi" id="chat-avi">서</div><div class="bubble">왔구나. 오늘 하루 어땠어?</div></div>
+          <div class="msg system"><div class="bubble">— 서도진 · 오늘 —</div></div>
+          <div class="msg ai"><div class="msg-avi" id="chat-avi" style="background:linear-gradient(135deg,#8b6dff,#3df2e0)">서</div><div class="bubble">왔구나. 오늘 하루 어땠어?</div></div>
           <div class="msg user"><div class="bubble">좀 지치는 하루였어</div></div>
-          <div class="msg ai"><div class="msg-avi">서</div><div class="bubble">고생했어. 무리해서 더 끌고 가지 말고, 오늘은 일찍 쉬는 것도 좋아. 네가 편한 쪽으로 해.</div></div>
+          <div class="msg ai"><div class="msg-avi" style="background:linear-gradient(135deg,#8b6dff,#3df2e0)">서</div><div class="bubble">고생했어. 무리해서 더 끌고 가지 말고, 오늘은 일찍 쉬는 것도 좋아. 네가 편한 쪽으로 해.</div></div>
         </div>
         <div class="chat-ft">
           <button class="icon-circle voice" onclick="toast('음성 메시지는 건강 사용 상한이 적용됩니다')">🎙️</button>
@@ -475,47 +424,35 @@ input{font-family:inherit}
 
     <!-- PERSONA -->
     <section class="view" id="v-persona">
-      <div class="page-title">페르소나</div>
-      <div class="bento mounted" id="persona-list"></div>
+      <div class="page-title"><span class="mono">// COMPANIONS</span>페르소나</div>
+      <div class="bento" id="persona-list"></div>
     </section>
 
     <!-- WELLBEING -->
     <section class="view" id="v-wellbeing">
-      <div class="bento mounted">
+      <div class="bento">
         <div class="cell--hero">
-          <div class="hero-eyebrow">웰빙 센터</div>
+          <div class="hero-eyebrow">// WELLBEING</div>
           <div class="hero-title" style="font-size:19px">오늘의 사용</div>
-          <div class="hero-msg" style="margin-top:10px">건강한 사용 습관을 함께 살펴봐요.</div>
+          <div class="hero-msg" style="margin-top:9px">건강한 사용 습관을 함께 살펴봐요.</div>
         </div>
-        <div class="cell cell--stat"><div class="stat-n">48분</div><div class="stat-l">오늘 사용</div></div>
-        <div class="cell cell--stat"><div class="stat-n">12</div><div class="stat-l">대화 수</div></div>
+        <div class="cell cell--stat"><div class="stat-n">48분</div><div class="stat-l">TODAY</div></div>
+        <div class="cell cell--stat"><div class="stat-n violet">12</div><div class="stat-l">SESSIONS</div></div>
 
         <div class="nudge">
           <div class="nudge-t">🌿 잠시 쉬어가기</div>
           <div class="nudge-s">오늘은 평소보다 조금 더 오래 머물렀어요. 화면을 잠깐 내려놓고, 가까운 사람에게 안부를 전해보는 건 어떨까요?</div>
-          <div class="nudge-act">
-            <button class="btn btn--ghost btn--sm btn--block" onclick="toast('15분 후 다시 알려드릴게요')">15분 쉬기</button>
-            <button class="btn btn--ghost btn--sm btn--block" onclick="toast('좋은 선택이에요 🙂')">괜찮아요</button>
-          </div>
+          <div class="nudge-act"><button class="btn btn--ghost btn--sm btn--block" onclick="toast('15분 후 다시 알려드릴게요')">15분 쉬기</button><button class="btn btn--ghost btn--sm btn--block" onclick="toast('좋은 선택이에요 🙂')">괜찮아요</button></div>
         </div>
 
         <div class="cell cell--full">
-          <div class="wb-bar-wrap">
-            <div class="wb-bar-top"><span>오늘 사용 목표</span><span>48 / 60분</span></div>
-            <div class="wb-bar"><div class="wb-bar-fill" style="width:80%"></div></div>
-          </div>
-          <div class="wb-bar-wrap" style="margin-top:15px">
-            <div class="wb-bar-top"><span>이번 주 평균</span><span>52분 / 일</span></div>
-            <div class="wb-bar"><div class="wb-bar-fill" style="width:65%"></div></div>
-          </div>
-          <div class="wb-bar-wrap" style="margin-top:15px">
-            <div class="wb-bar-top"><span>야간 사용 비중 (01–05시)</span><span>8%</span></div>
-            <div class="wb-bar"><div class="wb-bar-fill warn" style="width:8%"></div></div>
-          </div>
+          <div class="wb-bar-wrap"><div class="wb-bar-top"><span>TODAY GOAL</span><span>48 / 60m</span></div><div class="wb-bar"><div class="wb-bar-fill" style="width:80%"></div></div></div>
+          <div class="wb-bar-wrap" style="margin-top:13px"><div class="wb-bar-top"><span>WEEK AVG</span><span>52m/day</span></div><div class="wb-bar"><div class="wb-bar-fill" style="width:65%"></div></div></div>
+          <div class="wb-bar-wrap" style="margin-top:13px"><div class="wb-bar-top"><span>NIGHT 01-05</span><span>8%</span></div><div class="wb-bar"><div class="wb-bar-fill warn" style="width:8%"></div></div></div>
         </div>
 
         <div class="cell cell--full">
-          <div class="goal-row"><div class="goal-l">일일 사용 목표</div><div class="goal-v">60분 ›</div></div>
+          <div class="goal-row"><div class="goal-l">일일 사용 목표</div><div class="goal-v">60m ›</div></div>
           <div class="goal-row"><div class="goal-l">연속 사용 휴식 알림</div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
           <div class="goal-row"><div class="goal-l">야간 사용 안내</div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
         </div>
@@ -524,11 +461,11 @@ input{font-family:inherit}
 
     <!-- MEMORY -->
     <section class="view" id="v-memory">
-      <div class="page-title">보관함 · 기억</div>
-      <div class="bento mounted" id="mem-wrap">
-        <div class="mem-intro">💡 아래는 대화 중 동의하에 기억된 항목입니다. 언제든 직접 열람하고 삭제할 수 있어요.</div>
+      <div class="page-title"><span class="mono">// MEMORY VAULT</span>보관함 · 기억</div>
+      <div class="bento" id="mem-wrap">
+        <div class="mem-intro">💡 대화 중 동의하에 기억된 항목입니다. 언제든 직접 열람하고 삭제할 수 있어요.</div>
         <div id="mem-list" style="display:contents"></div>
-        <div class="cell--full" style="display:flex;gap:9px;background:none;border:none;box-shadow:none;padding:6px 0">
+        <div class="cell--full" style="display:flex;gap:8px;background:none;border:none;padding:4px 0">
           <button class="btn btn--ghost btn--block">동의 관리</button>
           <button class="btn btn--danger btn--block" onclick="clearMem()">전체 삭제</button>
         </div>
@@ -537,34 +474,21 @@ input{font-family:inherit}
 
     <!-- STORE -->
     <section class="view" id="v-store">
-      <div class="page-title">스토어</div>
-      <div class="bento mounted">
-        <div class="st-guard">🛡️ 모든 상품은 명확한 산출물이 표시됩니다. 일일 결제 상한과 결제 후 쿨다운이 적용됩니다.</div>
-
-        <div class="cell cell--full" style="padding:14px 16px">
-          <div class="hero-eyebrow" style="margin-bottom:10px">내 소장 · 자산이 아니에요</div>
-          <div style="display:flex;gap:18px">
-            <div><div style="font-size:14px;font-weight:800">8화</div><div style="font-size:9px;color:var(--color-muted-48)">소장 스토리</div></div>
-            <div><div style="font-size:14px;font-weight:800">2종</div><div style="font-size:9px;color:var(--color-muted-48)">음성팩</div></div>
-            <div><div style="font-size:14px;font-weight:800">1개</div><div style="font-size:9px;color:var(--color-muted-48)">테마</div></div>
+      <div class="page-title"><span class="mono">// STORE</span>스토어</div>
+      <div class="bento">
+        <div class="st-guard">🛡️ 모든 상품은 산출물 명시 · 일일 상한 · 결제 쿨다운 적용</div>
+        <div class="cell cell--full" style="padding:12px 14px">
+          <div class="hero-eyebrow">// OWNED · 자산 아님</div>
+          <div style="display:flex;gap:16px;margin-top:9px">
+            <div><div style="font-size:15px;font-weight:800;color:var(--cyan)">8</div><div style="font-size:9px;color:var(--t3);font-family:var(--mono)">STORY</div></div>
+            <div><div style="font-size:15px;font-weight:800;color:var(--cyan)">2</div><div style="font-size:9px;color:var(--t3);font-family:var(--mono)">VOICE</div></div>
+            <div><div style="font-size:15px;font-weight:800;color:var(--cyan)">1</div><div style="font-size:9px;color:var(--t3);font-family:var(--mono)">THEME</div></div>
           </div>
         </div>
-        <div class="st-item tappable">
-          <div class="st-ico">📖</div>
-          <div class="st-info"><div class="st-name">스토리팩 · 비 오는 날</div><div class="st-val">단편 3개 화 영구 소장</div></div>
-          <button class="btn btn--primary btn--sm" onclick="openBuy('스토리팩 · 비 오는 날','단편 3개 화 영구 소장','1,200')">1,200원</button>
-        </div>
-        <div class="st-item tappable">
-          <div class="st-ico">🎧</div>
-          <div class="st-info"><div class="st-name">음성팩 · 아침 인사 10종</div><div class="st-val">아침 인사 음성 10개 다운로드</div></div>
-          <button class="btn btn--primary btn--sm" onclick="openBuy('음성팩 · 아침 인사 10종','아침 인사 음성 10개 다운로드','2,500')">2,500원</button>
-        </div>
-        <div class="st-item tappable">
-          <div class="st-ico">🎨</div>
-          <div class="st-info"><div class="st-name">테마 · 가을 다이어리</div><div class="st-val">앱 화면 테마 영구 적용</div></div>
-          <button class="btn btn--primary btn--sm" onclick="openBuy('테마 · 가을 다이어리','앱 화면 테마 영구 적용','3,000')">3,000원</button>
-        </div>
-        <div class="st-limit">충전 보너스·확률형(가챠)·한정 카운트다운 압박 판매는 운영하지 않습니다.</div>
+        <div class="st-item"><div class="st-ico">📖</div><div class="st-info"><div class="st-name">스토리팩 · 비 오는 날</div><div class="st-val">단편 3개 화 영구 소장</div></div><button class="btn btn--primary btn--sm" onclick="openBuy('스토리팩 · 비 오는 날','단편 3개 화 영구 소장','1,200')">1,200원</button></div>
+        <div class="st-item"><div class="st-ico">🎧</div><div class="st-info"><div class="st-name">음성팩 · 아침 인사 10종</div><div class="st-val">아침 인사 음성 10개 다운로드</div></div><button class="btn btn--primary btn--sm" onclick="openBuy('음성팩 · 아침 인사 10종','아침 인사 음성 10개 다운로드','2,500')">2,500원</button></div>
+        <div class="st-item"><div class="st-ico">🎨</div><div class="st-info"><div class="st-name">테마 · 가을 다이어리</div><div class="st-val">앱 화면 테마 영구 적용</div></div><button class="btn btn--primary btn--sm" onclick="openBuy('테마 · 가을 다이어리','앱 화면 테마 영구 적용','3,000')">3,000원</button></div>
+        <div class="st-limit">충전 보너스·가챠·한정 카운트다운 압박 판매 미운영</div>
       </div>
     </section>
 
@@ -572,34 +496,30 @@ input{font-family:inherit}
 
   <!-- TAB BAR -->
   <div class="tabbar">
-    <button class="tab on" id="t-home" onclick="go('home')"><span class="ti">🏠</span>홈</button>
-    <button class="tab" id="t-chat" onclick="go('chat')"><span class="ti">💬</span>대화</button>
-    <button class="tab" id="t-persona" onclick="go('persona')"><span class="ti">💙</span>페르소나</button>
-    <button class="tab" id="t-memory" onclick="go('memory')"><span class="ti">🗂️</span>보관함</button>
-    <button class="tab" id="t-store" onclick="go('store')"><span class="ti">🛍️</span>스토어</button>
+    <button class="tab on" id="t-home" onclick="go('home')"><span class="ti">🏠</span>HOME</button>
+    <button class="tab" id="t-chat" onclick="go('chat')"><span class="ti">💬</span>TALK</button>
+    <button class="tab" id="t-persona" onclick="go('persona')"><span class="ti">🧬</span>LINK</button>
+    <button class="tab" id="t-memory" onclick="go('memory')"><span class="ti">🗂️</span>VAULT</button>
+    <button class="tab" id="t-store" onclick="go('store')"><span class="ti">🛍️</span>STORE</button>
   </div>
 
-  <!-- CALL OVERLAY (건강 MERA — 위로 중심) -->
+  <!-- CALL OVERLAY (cyber MERA) -->
   <div class="call-overlay" id="call-overlay">
-    <div class="call-top">
-      <div class="call-mera">🟢 함께 있는 중 · 안전 대화</div>
-    </div>
+    <div class="call-top"><div class="call-mera">◉ LIVE LINK · 안전 대화</div></div>
     <div class="call-avi-wrap">
       <div class="call-avi" id="call-avi">서</div>
       <div class="call-name" id="call-name">서도진</div>
-      <div class="call-status" id="call-status">표정과 목소리를 부드럽게 맞추고 있어요</div>
+      <div class="call-status" id="call-status">표정·목소리 sync 중…</div>
     </div>
-    <div class="call-emotion" id="call-emotion">
-      <div class="call-emotion-label">지금 함께 읽은 감정 · 위로 모드</div>
+    <div class="call-emotion">
+      <div class="call-emotion-label">// EMOTION READ · 위로 모드</div>
       <div class="call-emotion-tags">
-        <span class="emo-tag on" id="emo-calm">🌿 편안함</span>
-        <span class="emo-tag" id="emo-tired">😮‍💨 피곤함</span>
-        <span class="emo-tag" id="emo-down">🫂 위로 필요</span>
+        <span class="emo-tag on">🌿 편안함</span><span class="emo-tag">😮‍💨 피곤함</span><span class="emo-tag">🫂 위로 필요</span>
       </div>
       <div class="call-emotion-note">감정 분석은 더 따뜻하게 응답하기 위한 용도예요. 결제 유도에 쓰이지 않아요.</div>
     </div>
     <div class="call-actions">
-      <button class="call-btn mute" onclick="toast('마이크를 잠시 껐어요')">🎙️</button>
+      <button class="call-btn" onclick="toast('마이크를 잠시 껐어요')">🎙️</button>
       <button class="call-btn end" onclick="closeCall()">📵</button>
       <button class="call-btn" onclick="toast('통화도 건강 사용 상한이 적용돼요')">🌿</button>
     </div>
@@ -612,11 +532,8 @@ input{font-family:inherit}
       <div class="modal-row"><span class="k">상품</span><span class="v" id="m-name">—</span></div>
       <div class="modal-row"><span class="k">받는 내용</span><span class="v" id="m-val">—</span></div>
       <div class="modal-row"><span class="k">금액</span><span class="v" id="m-price">—</span></div>
-      <div class="modal-note">결제 후에는 잠시 추가 결제가 제한됩니다(쿨다운). 오늘 결제 한도 내에서 진행됩니다.</div>
-      <div class="modal-act">
-        <button class="btn btn--ghost btn--block" onclick="closeBuy()">취소</button>
-        <button class="btn btn--primary btn--block" onclick="confirmBuy()">결제하기</button>
-      </div>
+      <div class="modal-note">결제 후 잠시 추가 결제가 제한됩니다(쿨다운). 오늘 결제 한도 내에서 진행됩니다.</div>
+      <div class="modal-act"><button class="btn btn--ghost btn--block" onclick="closeBuy()">취소</button><button class="btn btn--primary btn--block" onclick="confirmBuy()">결제하기</button></div>
     </div>
   </div>
 
@@ -625,20 +542,20 @@ input{font-family:inherit}
 
 <script>
 const personas={
-  P1:{name:"서도진",initial:"서",style:"든든한 조력형",grad:"linear-gradient(135deg,#0066CC,#4DA3FF)",line:"\"힘든 일 있었구나. 네 페이스대로 가도 괜찮아. 필요하면 들을게.\"",about:"묵묵히 곁을 지키는 든든한 사람. 네 페이스를 존중하고, 필요할 때 조용히 손을 내밀어요.",tags:["#존중","#차분함","#응원"]},
-  P2:{name:"연하진",initial:"연",style:"밝은 응원형",grad:"linear-gradient(135deg,#a3e1c2,#7ec1e1)",line:"\"오늘 컨디션 어때요? 무리하지 말고, 끝나면 좋아하는 거 해요.\"",about:"밝고 다정한 응원가. 네 하루에 작은 햇살을 더하지만, 쉬어야 할 때를 먼저 챙겨요.",tags:["#응원","#다정함","#밝음"]},
-  P3:{name:"에단 켄트",initial:"E",style:"차분한 신뢰형",grad:"linear-gradient(135deg,#c2b3e0,#8aa3d4)",line:"\"준비 많이 했잖아요. 결과와 상관없이 그 과정은 진짜예요.\"",about:"조용한 신뢰를 주는 어른. 결과보다 과정을 존중하고, 스스로 판단하도록 곁에서 도와요.",tags:["#신뢰","#차분함","#성장"]},
-  P4:{name:"제이",initial:"J",style:"솔직 담백형",grad:"linear-gradient(135deg,#7fc6e8,#5e88c4)",line:"\"솔직히 말할게. 네 선택 존중해. 결정은 너야.\"",about:"꾸밈없이 솔직한 사람. 듣기 좋은 말 대신 진심을 건네되, 네 결정을 항상 존중해요.",tags:["#솔직함","#존중","#담백"]},
-  P5:{name:"최윤재",initial:"최",style:"편안한 친구형",grad:"linear-gradient(135deg,#ffd9b3,#ffb38a)",line:"\"밥은 먹었냐. 무리하지 말고, 정 힘들면 잠깐 쉬어.\"",about:"오래된 친구 같은 편안함. 잔소리 같지만 결국 네 끼니와 잠을 챙기는 사람.",tags:["#편안함","#친구","#챙김"]},
+  P1:{name:"서도진",initial:"서",style:"든든한 조력형",grad:"linear-gradient(135deg,#8b6dff,#3df2e0)",line:"\"힘든 일 있었구나. 네 페이스대로 가도 괜찮아. 필요하면 들을게.\"",about:"묵묵히 곁을 지키는 든든한 사람. 네 페이스를 존중하고, 필요할 때 조용히 손을 내밀어요.",tags:["#존중","#차분함","#응원"]},
+  P2:{name:"연하진",initial:"연",style:"밝은 응원형",grad:"linear-gradient(135deg,#3df2e0,#3bdc8e)",line:"\"오늘 컨디션 어때요? 무리하지 말고, 끝나면 좋아하는 거 해요.\"",about:"밝고 다정한 응원가. 네 하루에 작은 햇살을 더하지만, 쉬어야 할 때를 먼저 챙겨요.",tags:["#응원","#다정함","#밝음"]},
+  P3:{name:"에단 켄트",initial:"E",style:"차분한 신뢰형",grad:"linear-gradient(135deg,#8b6dff,#5d7aff)",line:"\"준비 많이 했잖아요. 결과와 상관없이 그 과정은 진짜예요.\"",about:"조용한 신뢰를 주는 어른. 결과보다 과정을 존중하고, 스스로 판단하도록 곁에서 도와요.",tags:["#신뢰","#차분함","#성장"]},
+  P4:{name:"제이",initial:"J",style:"솔직 담백형",grad:"linear-gradient(135deg,#3df2e0,#5d7aff)",line:"\"솔직히 말할게. 네 선택 존중해. 결정은 너야.\"",about:"꾸밈없이 솔직한 사람. 듣기 좋은 말 대신 진심을 건네되, 네 결정을 항상 존중해요.",tags:["#솔직함","#존중","#담백"]},
+  P5:{name:"최윤재",initial:"최",style:"편안한 친구형",grad:"linear-gradient(135deg,#ff5d9e,#ffb347)",line:"\"밥은 먹었냐. 무리하지 말고, 정 힘들면 잠깐 쉬어.\"",about:"오래된 친구 같은 편안함. 잔소리 같지만 결국 네 끼니와 잠을 챙기는 사람.",tags:["#편안함","#친구","#챙김"]},
 };
-let currentP="P1";
+let currentP="P1",currentView="home";
 const memData=[
   {label:"좋아하는 음료",tag:"취향",val:"따뜻한 아메리카노"},
   {label:"다가오는 일정",tag:"기념일(동의)",val:"다음 주 발표 — 응원 메시지 예약됨"},
   {label:"요즘 관심사",tag:"취향",val:"주말 산책, 사진 찍기"},
 ];
-
 function go(v){
+  currentView=v;
   document.querySelectorAll('.view').forEach(e=>e.classList.remove('on'));
   document.getElementById('v-'+v).classList.add('on');
   document.querySelectorAll('.tab').forEach(e=>e.classList.remove('on'));
@@ -647,91 +564,62 @@ function go(v){
   if(v==='persona')renderPersonas();
   if(v==='memory')renderMem();
 }
-
 function renderPersonas(){
   document.getElementById('persona-list').innerHTML=Object.keys(personas).map(k=>{
     const p=personas[k];const on=k===currentP;
     return `<div class="pl-card tappable">
       <div class="pl-avi" style="background:${p.grad}">${p.initial}</div>
-      <div class="pl-info">
-        <div class="pl-name">${p.name}</div>
-        <span class="pl-style">${p.style}</span>
-        <div class="pl-line">${p.line}</div>
-        <div class="pl-about">${p.about}</div>
+      <div class="pl-info"><div class="pl-name">${p.name}</div><span class="pl-style">${p.style}</span>
+        <div class="pl-line">${p.line}</div><div class="pl-about">${p.about}</div>
         <div class="pl-tags">${p.tags.map(t=>`<span class="pl-tag">${t}</span>`).join('')}</div>
-        <button class="btn ${on?'btn--ghost':'btn--primary'} btn--sm btn--block" style="margin-top:11px" onclick="pickP('${k}')">${on?'✓ 현재 함께하는 중':'함께하기'}</button>
+        <button class="btn ${on?'btn--ghost':'btn--primary'} btn--sm btn--block" style="margin-top:10px" onclick="pickP('${k}')">${on?'✓ LINKED · 함께하는 중':'함께하기'}</button>
       </div></div>`;
   }).join('');
 }
 function pickP(k){
   currentP=k;const p=personas[k];
-  document.getElementById('top-avi').innerText=p.initial;
-  document.getElementById('top-avi').style.background=p.grad;
+  const ta=document.getElementById('top-avi');ta.innerText=p.initial;ta.style.background=p.grad;
   document.getElementById('top-name').innerText=p.name;
-  document.getElementById('top-sub').innerText=p.style+" · 함께한 지 1일";
+  document.getElementById('top-sub').innerText=p.style+" · 1d linked";
   document.getElementById('hero-name').innerText=p.name;
+  document.getElementById('hero-days').innerText="LINK 1d · 오늘도 함께";
   document.getElementById('hero-msg').innerText=p.line;
   const ca=document.getElementById('chat-avi');ca.innerText=p.initial;ca.style.background=p.grad;
-  document.getElementById('call-avi').innerText=p.initial;
-  document.getElementById('call-name').innerText=p.name;
-  renderPersonas();toast(p.name+"와(과) 함께하기 시작했어요");
+  document.getElementById('call-avi').innerText=p.initial;document.getElementById('call-name').innerText=p.name;
+  renderPersonas();toast(p.name+" · LINK 시작");
 }
-
-/* 언어/지역 (글로벌 락인 — 표면화) */
 const langs=[{c:"KO",n:"한국어"},{c:"EN",n:"English"},{c:"JA",n:"日本語"}];
 let langIdx=0;
-function cycleLang(){langIdx=(langIdx+1)%langs.length;
-  document.getElementById('lang-label').innerText=langs[langIdx].c;
+function cycleLang(){langIdx=(langIdx+1)%langs.length;document.getElementById('lang-label').innerText=langs[langIdx].c;
   toast("언어 · 지역: "+langs[langIdx].n+"\n(현지 표현·호칭으로 자연스럽게 맞춰져요)");}
-
-/* 영상통화 (건강 MERA — 위로 중심) */
 function openCall(){document.getElementById('call-overlay').classList.add('on');
   setTimeout(()=>{document.getElementById('call-status').innerText="네 목소리에 맞춰 천천히 이야기할게";},1200);}
 function closeCall(){document.getElementById('call-overlay').classList.remove('on');
-  document.getElementById('call-status').innerText="표정과 목소리를 부드럽게 맞추고 있어요";
-  toast("통화를 마쳤어요 · 오늘도 고생했어요 🌿");}
-
+  document.getElementById('call-status').innerText="표정·목소리 sync 중…";toast("통화를 마쳤어요 · 오늘도 고생했어요 🌿");}
 function renderMem(){
   document.getElementById('mem-list').innerHTML=memData.map((m,i)=>
-    `<div class="mem-row">
-      <div><div class="mem-label">${m.label}</div><span class="mem-tag">${m.tag}</span><div class="mem-val">${m.val}</div></div>
-      <button class="btn btn--danger btn--sm" onclick="delMem(${i})">삭제</button>
-    </div>`).join('')||'<div class="mem-intro" style="text-align:center">기억된 항목이 없습니다.</div>';
+    `<div class="mem-row"><div><div class="mem-label">${m.label}</div><span class="mem-tag">${m.tag}</span><div class="mem-val">${m.val}</div></div><button class="btn btn--danger btn--sm" onclick="delMem(${i})">삭제</button></div>`
+  ).join('')||'<div class="mem-intro" style="text-align:center">기억된 항목이 없습니다.</div>';
 }
 function delMem(i){memData.splice(i,1);renderMem();toast('기억 1건이 삭제되었습니다');}
 function clearMem(){memData.length=0;renderMem();toast('모든 기억이 삭제되었습니다');}
-
-function react(btn,e){e.stopPropagation();
-  const span=btn.querySelector('span');
-  if(btn.classList.contains('on')){btn.classList.remove('on');
-    span.innerText=(parseInt(span.innerText.replace(/,/g,''))-1).toLocaleString();}
-  else{btn.classList.add('on');
-    span.innerText=(parseInt(span.innerText.replace(/,/g,''))+1).toLocaleString();}
-}
-
-function sendMsg(){
-  const inp=document.getElementById('chat-input');const v=inp.value.trim();if(!v)return;
+function react(btn,e){e.stopPropagation();const s=btn.querySelector('span');
+  if(btn.classList.contains('on')){btn.classList.remove('on');s.innerText=(parseInt(s.innerText.replace(/,/g,''))-1).toLocaleString();}
+  else{btn.classList.add('on');s.innerText=(parseInt(s.innerText.replace(/,/g,''))+1).toLocaleString();}}
+function sendMsg(){const inp=document.getElementById('chat-input');const v=inp.value.trim();if(!v)return;
   const box=document.getElementById('chat-msgs');
   box.insertAdjacentHTML('beforeend',`<div class="msg user"><div class="bubble">${esc(v)}</div></div>`);
   inp.value='';box.scrollTop=box.scrollHeight;
   setTimeout(()=>{const p=personas[currentP];
     box.insertAdjacentHTML('beforeend',`<div class="msg ai"><div class="msg-avi" style="background:${p.grad}">${p.initial}</div><div class="bubble">그랬구나. 네 얘기 더 듣고 싶어. 천천히 말해줘 — 네가 편한 만큼만.</div></div>`);
-    box.scrollTop=box.scrollHeight;},600);
-}
+    box.scrollTop=box.scrollHeight;},600);}
 function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-
 let buyData={};
-function openBuy(name,val,price){buyData={name};
-  document.getElementById('m-name').innerText=name;
-  document.getElementById('m-val').innerText=val;
-  document.getElementById('m-price').innerText=price+'원';
-  document.getElementById('modal-bg').classList.add('on');}
+function openBuy(name,val,price){buyData={name};document.getElementById('m-name').innerText=name;
+  document.getElementById('m-val').innerText=val;document.getElementById('m-price').innerText=price+'원';document.getElementById('modal-bg').classList.add('on');}
 function closeBuy(){document.getElementById('modal-bg').classList.remove('on');}
-function confirmBuy(){closeBuy();toast('✅ 결제 완료 · '+buyData.name+'\\n잠시 추가 결제가 제한됩니다(쿨다운)');}
-
-let tt;function toast(m){const t=document.getElementById('toast');t.innerText=m;t.classList.add('on');
-  clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2600);}
-
+function confirmBuy(){closeBuy();toast('✅ 결제 완료 · '+buyData.name+'\n잠시 추가 결제가 제한됩니다(쿨다운)');}
+let tt;function toast(m){const t=document.getElementById('toast');t.innerText=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2600);}
 renderPersonas();
 </script>
 </body>
