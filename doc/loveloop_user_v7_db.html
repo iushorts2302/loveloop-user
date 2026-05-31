@@ -377,20 +377,20 @@ input{font-family:inherit;outline:none}
 
         <div class="sec-label">오늘의 피드 · 3/3</div>
 
-        <div class="feed-card tappable">
+        <div class="feed-card">
           <div class="fc-photo" style="background:linear-gradient(135deg,#1a3a4a,#2a5a6a)"><span class="emoji">🌿</span><span class="fc-tag">daily</span></div>
           <div class="fc-body"><div class="fc-title">아침 공원에서</div>
             <div class="fc-text">"날씨가 좋아서 너 생각났어. 너도 가끔 바깥 공기 쐬어 — 잠깐이라도."</div>
             <div class="fc-foot"><div class="fc-react"><button class="react-btn" onclick="react(this,event)">🤍 <span>1,204</span></button><button class="react-btn" onclick="go('chat')">💬 답장</button></div></div></div>
         </div>
-        <div class="feed-card tappable">
+        <div class="feed-card">
           <div class="fc-photo" style="background:linear-gradient(135deg,#2a2a5a,#4a3a7a)"><span class="emoji">📖</span><span class="fc-tag">story</span></div>
           <div class="fc-body"><div class="fc-title">비 오는 날의 대화</div>
             <div class="fc-text">잔잔한 위로가 담긴 단편 3화. 미리보기 후 결정할 수 있어요.</div>
             <div class="fc-foot"><div class="fc-react"><button class="react-btn" onclick="react(this,event)">🤍 <span>892</span></button></div>
             <button class="btn btn--primary btn--sm" onclick="openBuy('스토리팩 · 비 오는 날','단편 3화 영구 소장','1,200')">3화 · 1,200원</button></div></div>
         </div>
-        <div class="feed-card tappable">
+        <div class="feed-card">
           <div class="fc-photo" style="background:linear-gradient(135deg,#3a2a4a,#5a3a5a)"><span class="emoji">🌙</span><span class="fc-tag">comfort</span></div>
           <div class="fc-body"><div class="fc-title">수고한 너에게</div>
             <div class="fc-text">"오늘 충분히 잘했어. 결과가 어떻든 그 과정은 진짜였잖아. 푹 쉬어."</div>
@@ -466,7 +466,7 @@ input{font-family:inherit;outline:none}
         <div class="mem-intro">💡 대화 중 동의하에 기억된 항목입니다. 언제든 직접 열람하고 삭제할 수 있어요.</div>
         <div id="mem-list" style="display:contents"></div>
         <div class="cell--full" style="display:flex;gap:8px;background:none;border:none;padding:4px 0">
-          <button class="btn btn--ghost btn--block">동의 관리</button>
+          <button class="btn btn--ghost btn--block" onclick="manageConsent()">동의 관리</button>
           <button class="btn btn--danger btn--block" onclick="clearMem()">전체 삭제</button>
         </div>
       </div>
@@ -549,7 +549,9 @@ function go(v){
   document.querySelectorAll('.view').forEach(e=>e.classList.remove('on'));
   document.getElementById('v-'+v).classList.add('on');
   document.querySelectorAll('.tab').forEach(e=>e.classList.remove('on'));
-  const t=document.getElementById('t-'+v);if(t)t.classList.add('on');
+  const t=document.getElementById('t-'+v);
+  if(t){t.classList.add('on');}
+  else{const h=document.getElementById('t-home');if(h)h.classList.add('on');} // 보조화면: 위치표시 유지
   document.querySelector('.screen').scrollTop=0;
   if(v==='persona')renderPersonas();
   if(v==='memory')renderMem();
@@ -615,6 +617,7 @@ function openBuy(name,val,price){buyData={name};document.getElementById('m-name'
 function closeBuy(){document.getElementById('modal-bg').classList.remove('on');}
 function confirmBuy(){closeBuy();toast('✅ 결제 완료 · '+buyData.name+'\n잠시 추가 결제가 제한됩니다(쿨다운)');}
 let tt;function toast(m){const t=document.getElementById('toast');t.innerText=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2600);}
+function manageConsent(){toast('기억 동의 관리 · 항목별 동의를 켜고 끌 수 있어요\n(동의 꺼진 기억은 사용·표시되지 않습니다)');}
 
 // ───── DB 로딩 (모든 출력 데이터는 /api 경유) ─────
 // API 응답 행을 기존 렌더 함수가 기대하는 모양으로 매핑.
