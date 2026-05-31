@@ -13,9 +13,9 @@
   --bg0:#05060c;          /* 무대 최하단 */
   --bg1:#0a0d18;          /* 디바이스 베이스 */
   --bg2:#0e1322;          /* 패널 */
-  --bg3:#141a2e;          /* 카드 */
-  --line:rgba(120,160,255,.12);
-  --line2:rgba(120,160,255,.2);
+  --bg3:#1a2238;          /* 카드 */
+  --line:rgba(140,175,255,.2);
+  --line2:rgba(140,175,255,.32);
   /* neon accents */
   --cyan:#3df2e0;
   --cyan-d:#1ad6c4;
@@ -25,12 +25,12 @@
   --amber:#ffb347;
   --green:#3bdc8e;
   /* text */
-  --t1:#e8ecff;
-  --t2:#9aa3c7;
-  --t3:#5f6788;
-  --t4:#3f4straße;
-  --t4c:#454d6e;
-  --glass:rgba(20,26,46,.55);
+  --t1:#f4f6ff;
+  --t2:#c3c9e6;
+  --t3:#8b93ba;
+  --t4:#6b7399;
+  --t4c:#6b7399;
+  --glass:rgba(24,31,54,.82);
   --glow-cyan:0 0 0 1px rgba(61,242,224,.3),0 0 18px rgba(61,242,224,.18);
   --glow-violet:0 0 0 1px rgba(139,109,255,.35),0 0 22px rgba(139,109,255,.22);
   --radius:16px; --radius-sm:11px;
@@ -58,7 +58,7 @@ input{font-family:inherit;outline:none}
 .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:118px;height:28px;
   background:#02030a;border-radius:0 0 16px 16px;z-index:600}
 /* scanline + grid texture */
-.device::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:580;opacity:.5;
+.device::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:580;opacity:.28;
   background:
     linear-gradient(rgba(61,242,224,.025) 1px,transparent 1px) 0 0/100% 3px,
     radial-gradient(circle at 50% 50%,transparent 60%,rgba(5,6,12,.4))}
